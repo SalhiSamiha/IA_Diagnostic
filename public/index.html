@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic IA · Maturité SDLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a1a2e;
+  --bg2: #16213e;
+  --bg3: #0f3460;
+  --accent: #4fc3f7;
+  --accent2: #81d4fa;
+  --accent-dim: rgba(79,195,247,0.12);
+  --accent-border: rgba(79,195,247,0.3);
+  --text: #e8eaf0;
+  --text2: #8892a4;
+  --text3: #4a5568;
+  --success: #4caf93;
+  --warn: #f4c97a;
+  --danger: #ef6c6c;
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND GRID ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 64px;
+  background: rgba(26,26,46,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--card-border);
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-size: 13px;
+  color: var(--text2);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 7rem 2rem 5rem;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: .8;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  max-width: 720px;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 520px;
+  margin-bottom: 3rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--accent);
+  color: #1a1a2e;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: .04em;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-ghost:hover {
+  background: var(--accent-dim);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--card-border);
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: var(--serif);
+  font-size: 2rem;
+  color: var(--accent);
+  display: block;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ── SECTION LAYOUT ── */
+section { position: relative; z-index: 1; }
+.section-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: .7;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 400;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+.section-sub {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 540px;
+  font-weight: 300;
+  margin-bottom: 3rem;
+}
+
+/* ── WIZARD ── */
+#diagnostic { background: var(--bg2); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 3rem;
+}
+.wp-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+.wp-step:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+  margin: 0 12px;
+  transition: background .4s;
+}
+.wp-step.done:not(:last-child)::after { background: var(--accent); }
+
+.wp-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  flex-shrink: 0;
+  transition: all .3s;
+  background: var(--bg);
+}
+.wp-step.active .wp-dot {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+.wp-step.done .wp-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1a2e;
+}
+.wp-name {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.wp-step.active .wp-name { color: var(--accent); }
+.wp-step.done .wp-name { color: var(--text); }
+
+/* ── WIZARD PANELS ── */
+.wizard-panel { display: none; animation: fadeUp .35s ease; }
+.wizard-panel.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.panel-title {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  margin-bottom: .5rem;
+  font-weight: 400;
+}
+.panel-sub { font-size: 14px; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+
+/* ── FORM ELEMENTS ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+.form-grid.single { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.form-group select option { background: var(--bg2); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* ── ROLE CARDS ── */
+.role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+
+.role-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.role-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.role-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.role-name { font-size: 14px; font-weight: 500; }
+.role-sub { font-size: 12px; color: var(--text2); }
+
+.slider-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: .75rem; }
+.slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.slider-q { font-size: 12px; color: var(--text2); }
+.slider-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 28px;
+  text-align: right;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg3);
+  outline: none;
+  cursor: pointer;
+  border: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  cursor: pointer;
+  transition: transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* ── SDLC TABLE ── */
+.sdlc-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 2rem; }
+.sdlc-table th {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text2);
+  font-weight: 400;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--card-border);
+}
+.sdlc-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.sdlc-table tr:last-child td { border-bottom: none; }
+.sdlc-table tr:hover td { background: var(--card); }
+
+.radio-group { display: flex; gap: 6px; }
+.radio-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+  background: transparent;
+}
+.radio-pill:hover { border-color: var(--accent-border); color: var(--text); }
+.radio-pill.selected {
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* ── GOV CARDS ── */
+.gov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+.gov-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+}
+.gov-q { font-size: 13px; margin-bottom: .75rem; font-weight: 400; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+.toggle-label { font-size: 12px; color: var(--text2); }
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg3);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background .2s;
+  border: 1px solid var(--card-border);
+}
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: var(--text2);
+  transition: all .2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::after { transform: translateX(18px); background: #1a1a2e; }
+
+/* ── NOTE FACILITATEUR ── */
+.facilitator-note {
+  background: rgba(79,195,247,0.06);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+}
+.fac-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+  opacity: .8;
+}
+.facilitator-note textarea {
+  background: transparent;
+  border: none;
+  width: 100%;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+  padding: 0;
+  font-weight: 300;
+}
+
+/* ── WIZARD NAV ── */
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--card-border);
+}
+.wizard-nav-info { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+.btn-nav-group { display: flex; gap: 12px; }
+
+/* ── GENERATE BUTTON ── */
+.generate-wrap { text-align: center; padding: 2rem 0 0; }
+.btn-generate {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: var(--accent);
+  color: #1a1a2e;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .25s;
+  letter-spacing: .02em;
+}
+.btn-generate:hover {
+  background: var(--accent2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(79,195,247,0.25);
+}
+.btn-generate:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(26,26,46,0.3);
+  border-top-color: #1a1a2e;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── API KEY BANNER ── */
+.api-banner {
+  background: rgba(244,201,122,0.08);
+  border: 1px solid rgba(244,201,122,0.25);
+  border-radius: var(--radius-sm);
+  padding: .75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: var(--warn);
+}
+.api-banner input {
+  flex: 1;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(244,201,122,0.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+}
+.api-banner input:focus { border-color: var(--warn); }
+.api-banner input::placeholder { color: rgba(244,201,122,0.4); }
+
+/* ── RESULTS ── */
+#results { display: none; background: var(--bg); border-top: 1px solid var(--card-border); }
+#results.visible { display: block; }
+
+.results-header {
+  text-align: center;
+  padding: 4rem 2rem 2rem;
+}
+.results-header h2 {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 400;
+  margin-bottom: .5rem;
+}
+.results-header p { font-size: 14px; color: var(--text2); font-weight: 300; }
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+.score-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.score-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: .6;
+}
+.score-card.warn::before { background: var(--warn); }
+.score-card.danger::before { background: var(--danger); }
+.score-num {
+  font-family: var(--serif);
+  font-size: 3rem;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: .25rem;
+}
+.score-card.warn .score-num { color: var(--warn); }
+.score-card.danger .score-num { color: var(--danger); }
+.score-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .08em; }
+.score-bar-wrap { margin-top: 1rem; background: var(--bg3); border-radius: 2px; height: 4px; }
+.score-bar { height: 4px; border-radius: 2px; background: var(--accent); transition: width 1s ease; }
+.score-card.warn .score-bar { background: var(--warn); }
+.score-card.danger .score-bar { background: var(--danger); }
+
+/* ── RADAR ── */
+.radar-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+#radar-svg { width: 100%; max-width: 380px; display: block; margin: 0 auto; }
+
+.radar-legend { padding-top: 1rem; }
+.legend-title {
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 1rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: .75rem;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.legend-text { font-size: 13px; }
+.legend-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  margin-left: auto;
+}
+
+/* ── PLAN D'ACTIONS ── */
+.plan-section { margin-bottom: 3rem; }
+.plan-title {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+.horizon-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+.h-tab {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  background: transparent;
+}
+.h-tab.active {
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.actions-container { display: none; }
+.actions-container.active { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.action-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  position: relative;
+}
+.action-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+}
+.action-text { font-size: 13px; color: var(--text); line-height: 1.6; font-weight: 300; }
+.action-impact {
+  display: inline-block;
+  margin-top: .75rem;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(76,175,147,0.1);
+  border: 1px solid rgba(76,175,147,0.25);
+  color: var(--success);
+}
+
+.plan-loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text2);
+  font-size: 14px;
+}
+.plan-loading .spinner {
+  border-color: var(--accent-dim);
+  border-top-color: var(--accent);
+  margin: 0 auto 1rem;
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+/* ── SERVICES ── */
+#services { background: var(--bg2); border-top: 1px solid var(--card-border); }
+.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  transition: border-color .3s;
+}
+.service-card:hover { border-color: var(--accent-border); }
+.service-icon {
+  font-size: 28px;
+  margin-bottom: 1rem;
+  display: block;
+}
+.service-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: .5rem;
+}
+.service-desc { font-size: 13px; color: var(--text2); line-height: 1.65; font-weight: 300; }
+.service-price {
+  margin-top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2.5rem 2rem;
+  border-top: 1px solid var(--card-border);
+  font-size: 12px;
+  color: var(--text3);
+}
+footer a { color: var(--text2); text-decoration: none; }
+
+/* ── PRINT ── */
+@media print {
+  nav, .hero, #diagnostic, #services, footer { display: none !important; }
+  #results { display: block !important; }
+  body { background: white; color: black; }
+  .score-card, .action-card { border: 1px solid #ddd; }
+  .actions-container { display: grid !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <span class="nav-logo">⬡ Diagnostic IA</span>
+  <div class="nav-links">
+    <a href="#diagnostic">Diagnostic</a>
+    <a href="#services">Services</a>
+    <a href="mailto:salhisamiha83@gmail.com">Contact</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <p class="hero-eyebrow">Samiha Salhi-Kacher · Intégratrice IA · 18 ans d'expérience</p>
+  <h1>Votre équipe utilise l'IA.<br>Mais <em>comment</em>, vraiment ?</h1>
+  <p class="hero-sub">Ingénieure en systèmes d'information, 18 ans en transformation TI — dont 3 ans en IA générative appliquée en contexte bancaire et assurance. Je mesure la maturité réelle de vos équipes et génère un plan d'actions ancré dans votre terrain.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="#diagnostic" class="btn-primary">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Démarrer le diagnostic
+    </a>
+    <a href="#services" class="btn-ghost">Voir les services</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">6</span>
+      <span class="stat-label">Dimensions analysées</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Axes de scoring</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">45'</span>
+      <span class="stat-label">Durée de l'atelier</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── DIAGNOSTIC WIZARD ── -->
+<section id="diagnostic">
+  <div class="section-inner">
+    <p class="section-label">Étape par étape</p>
+    <h2 class="section-title">Diagnostic de maturité IA</h2>
+    <p class="section-sub">Répondez honnêtement. La valeur est dans la précision, pas dans la perfection.</p>
+
+    <!-- PROGRESS -->
+    <div class="wizard-progress" id="wizard-progress">
+      <div class="wp-step active" data-step="1">
+        <div class="wp-dot">1</div>
+        <span class="wp-name">Profil</span>
+      </div>
+      <div class="wp-step" data-step="2">
+        <div class="wp-dot">2</div>
+        <span class="wp-name">Rôles</span>
+      </div>
+      <div class="wp-step" data-step="3">
+        <div class="wp-dot">3</div>
+        <span class="wp-name">SDLC</span>
+      </div>
+      <div class="wp-step" data-step="4">
+        <div class="wp-dot">4</div>
+        <span class="wp-name">Gouvernance</span>
+      </div>
+    </div>
+
+    <!-- STEP 1 : PROFIL -->
+    <div class="wizard-panel active" id="panel-1">
+      <h3 class="panel-title">Profil de l'organisation</h3>
+      <p class="panel-sub">Contexte de base pour personnaliser le diagnostic.</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nom de l'organisation</label>
+          <input type="text" id="org-name" placeholder="Desjardins, Intact...">
+        </div>
+        <div class="form-group">
+          <label>Secteur</label>
+          <select id="sector">
+            <option value="">Choisir...</option>
+            <option>Assurance</option>
+            <option>Banque / Finance</option>
+            <option>Technologie</option>
+            <option>Santé</option>
+            <option>Gouvernement / OBNL</option>
+            <option>Manufacture</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Taille de l'équipe TI</label>
+          <select id="team-size">
+            <option value="">Choisir...</option>
+            <option>< 20 personnes</option>
+            <option>20–100 personnes</option>
+            <option>100–500 personnes</option>
+            <option>> 500 personnes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Méthodologie principale</label>
+          <select id="methodology">
+            <option value="">Choisir...</option>
+            <option>Agile / Scrum</option>
+            <option>SAFe</option>
+            <option>Kanban</option>
+            <option>Waterfall</option>
+            <option>Hybride</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Outils IA déjà adoptés</label>
+          <input type="text" id="tools" placeholder="Copilot, ChatGPT, Cursor...">
+        </div>
+        <div class="form-group">
+          <label>Budget IA annuel estimé</label>
+          <select id="budget">
+            <option value="">Choisir...</option>
+            <option>Aucun budget dédié</option>
+            <option>< 50K$</option>
+            <option>50K$ – 200K$</option>
+            <option>> 200K$</option>
+          </select>
+        </div>
+      </div>
+      <div class="facilitator-note">
+        <p class="fac-label">&#128274; Note facilitateur (confidentielle)</p>
+        <textarea rows="2" id="note-profil" placeholder="Observations terrain, contexte organisationnel non-dit..."></textarea>
+      </div>
+      <div class="wizard-nav">
+        <span class="wizard-nav-info">Étape 1 / 4</span>
+        <button class="btn-primary" onclick="goStep(2)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 : RÔLES -->
+    <div class="wizard-panel" id="panel-2">
+      <h3 class="panel-title">Augmentation par rôle</h3>
+      <p class="panel-sub">Évaluez dans quelle mesure l'IA augmente concrètement chaque rôle au quotidien.</p>
+      <div class="role-grid">
+
+        <div class="role-card">
+          <div class="role-card-head">
+            <div class="role-icon">⌨</div>
+            <div><div class="role-name">Développeur·se</div><div class="role-sub">Dev, Senior Dev, Lead</div></div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Génération de code</span>
+              <span class="slider-val" id="v-dev-1">3</span>
+            </div>
+            <input type="range" min="0" max="5" value="3" id="s-dev-1" oninput="updateSlider('dev-1')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Revues et debugging</span>
+              <span class="slider-val" id="v-dev-2">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-dev-2" oninput="updateSlider('dev-2')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Documentation</span>
+              <span class="slider-val" id="v-dev-3">1</span>
+            </div>
+            <input type="range" min="0" max="5" value="1" id="s-dev-3" oninput="updateSlider('dev-3')">
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-card-head">
+            <div class="role-icon">✓</div>
+            <div><div class="role-name">QA / Testeur·se</div><div class="role-sub">QA, SDET, Test Lead</div></div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Génération de cas tests</span>
+              <span class="slider-val" id="v-qa-1">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-qa-1" oninput="updateSlider('qa-1')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Analyse de couverture</span>
+              <span class="slider-val" id="v-qa-2">1</span>
+            </div>
+            <input type="range" min="0" max="5" value="1" id="s-qa-2" oninput="updateSlider('qa-2')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Automatisation BDD/TDD</span>
+              <span class="slider-val" id="v-qa-3">1</span>
+            </div>
+            <input type="range" min="0" max="5" value="1" id="s-qa-3" oninput="updateSlider('qa-3')">
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-card-head">
+            <div class="role-icon">◈</div>
+            <div><div class="role-name">Product Owner</div><div class="role-sub">PO, PM, Scrum Master</div></div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Rédaction user stories</span>
+              <span class="slider-val" id="v-po-1">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-po-1" oninput="updateSlider('po-1')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Analyse des besoins</span>
+              <span class="slider-val" id="v-po-2">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-po-2" oninput="updateSlider('po-2')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Priorisation backlog</span>
+              <span class="slider-val" id="v-po-3">1</span>
+            </div>
+            <input type="range" min="0" max="5" value="1" id="s-po-3" oninput="updateSlider('po-3')">
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-card-head">
+            <div class="role-icon">⬡</div>
+            <div><div class="role-name">Architecte</div><div class="role-sub">Solution, Cloud, Data</div></div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Conception de solutions</span>
+              <span class="slider-val" id="v-arch-1">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-arch-1" oninput="updateSlider('arch-1')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Évaluation des risques</span>
+              <span class="slider-val" id="v-arch-2">1</span>
+            </div>
+            <input type="range" min="0" max="5" value="1" id="s-arch-2" oninput="updateSlider('arch-2')">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-row">
+              <span class="slider-q">Documentation technique</span>
+              <span class="slider-val" id="v-arch-3">2</span>
+            </div>
+            <input type="range" min="0" max="5" value="2" id="s-arch-3" oninput="updateSlider('arch-3')">
+          </div>
+        </div>
+
+      </div>
+      <div class="facilitator-note">
+        <p class="fac-label">&#128274; Note facilitateur</p>
+        <textarea rows="2" id="note-roles" placeholder="Gap déclaratif vs réel observé, profils résistants, champions identifiés..."></textarea>
+      </div>
+      <div class="wizard-nav">
+        <button class="btn-ghost" onclick="goStep(1)">← Retour</button>
+        <span class="wizard-nav-info">Étape 2 / 4</span>
+        <button class="btn-primary" onclick="goStep(3)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 : SDLC -->
+    <div class="wizard-panel" id="panel-3">
+      <h3 class="panel-title">Pratiques SDLC</h3>
+      <p class="panel-sub">Pour chaque pratique, indiquez le niveau d'intégration réelle de l'IA.</p>
+      <table class="sdlc-table">
+        <thead>
+          <tr>
+            <th style="width:35%">Pratique</th>
+            <th>Niveau d'intégration IA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CI/CD pipeline</td>
+            <td><div class="radio-group" data-name="cicd">
+              <div class="radio-pill" onclick="selectRadio(this,'cicd','Absent')">Absent</div>
+              <div class="radio-pill selected" onclick="selectRadio(this,'cicd','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'cicd','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'cicd','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>Revues de code</td>
+            <td><div class="radio-group" data-name="codereview">
+              <div class="radio-pill selected" onclick="selectRadio(this,'codereview','Absent')">Absent</div>
+              <div class="radio-pill" onclick="selectRadio(this,'codereview','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'codereview','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'codereview','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>Tests BDD / TDD</td>
+            <td><div class="radio-group" data-name="bdd">
+              <div class="radio-pill selected" onclick="selectRadio(this,'bdd','Absent')">Absent</div>
+              <div class="radio-pill" onclick="selectRadio(this,'bdd','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'bdd','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'bdd','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>Documentation vivante</td>
+            <td><div class="radio-group" data-name="doc">
+              <div class="radio-pill" onclick="selectRadio(this,'doc','Absent')">Absent</div>
+              <div class="radio-pill selected" onclick="selectRadio(this,'doc','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'doc','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'doc','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>Sprint planning / Estimation</td>
+            <td><div class="radio-group" data-name="planning">
+              <div class="radio-pill selected" onclick="selectRadio(this,'planning','Absent')">Absent</div>
+              <div class="radio-pill" onclick="selectRadio(this,'planning','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'planning','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'planning','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+          <tr>
+            <td>Monitoring & observabilité</td>
+            <td><div class="radio-group" data-name="monitoring">
+              <div class="radio-pill" onclick="selectRadio(this,'monitoring','Absent')">Absent</div>
+              <div class="radio-pill selected" onclick="selectRadio(this,'monitoring','Partiel')">Partiel</div>
+              <div class="radio-pill" onclick="selectRadio(this,'monitoring','Intégré')">Intégré</div>
+              <div class="radio-pill" onclick="selectRadio(this,'monitoring','Optimisé')">Optimisé</div>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="facilitator-note">
+        <p class="fac-label">&#128274; Note facilitateur</p>
+        <textarea rows="2" id="note-sdlc" placeholder="Dette technique, pipelines fragiles, pratiques déclarées vs réelles..."></textarea>
+      </div>
+      <div class="wizard-nav">
+        <button class="btn-ghost" onclick="goStep(2)">← Retour</button>
+        <span class="wizard-nav-info">Étape 3 / 4</span>
+        <button class="btn-primary" onclick="goStep(4)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 : GOUVERNANCE -->
+    <div class="wizard-panel" id="panel-4">
+      <h3 class="panel-title">Gouvernance IA</h3>
+      <p class="panel-sub">Politiques, risques, conformité. Ce que l'organisation a formalisé — ou pas.</p>
+      <div class="gov-grid">
+        <div class="gov-card">
+          <p class="gov-q">Politiques d'usage de l'IA</p>
+          <div class="toggle-row">
+            <span class="toggle-label">Politique écrite et diffusée</span>
+            <label class="toggle"><input type="checkbox" id="g-policy"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Formation obligatoire</span>
+            <label class="toggle"><input type="checkbox" id="g-training"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Revue annuelle prévue</span>
+            <label class="toggle"><input type="checkbox" id="g-review"><div class="toggle-slider"></div></label>
+          </div>
+        </div>
+        <div class="gov-card">
+          <p class="gov-q">Gestion des risques IA</p>
+          <div class="toggle-row">
+            <span class="toggle-label">Registre des risques IA</span>
+            <label class="toggle"><input type="checkbox" id="g-risk"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Évaluation des biais</span>
+            <label class="toggle"><input type="checkbox" id="g-bias"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Procédure d'incident IA</span>
+            <label class="toggle"><input type="checkbox" id="g-incident"><div class="toggle-slider"></div></label>
+          </div>
+        </div>
+        <div class="gov-card">
+          <p class="gov-q">Conformité et données</p>
+          <div class="toggle-row">
+            <span class="toggle-label">Inventaire flux LLM / données</span>
+            <label class="toggle"><input type="checkbox" id="g-data"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Conformité Loi 25 / LPRPDE</span>
+            <label class="toggle"><input type="checkbox" id="g-loi25"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Audit IA planifié</span>
+            <label class="toggle"><input type="checkbox" id="g-audit"><div class="toggle-slider"></div></label>
+          </div>
+        </div>
+        <div class="gov-card">
+          <p class="gov-q">Culture et leadership</p>
+          <div class="toggle-row">
+            <span class="toggle-label">Champion·ne IA identifié·e</span>
+            <label class="toggle"><input type="checkbox" id="g-champ" checked><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Budget IA dédié et approuvé</span>
+            <label class="toggle"><input type="checkbox" id="g-budget"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Objectifs IA dans OKR/plans</span>
+            <label class="toggle"><input type="checkbox" id="g-okr"><div class="toggle-slider"></div></label>
+          </div>
+        </div>
+      </div>
+      <div class="facilitator-note">
+        <p class="fac-label">&#128274; Note facilitateur</p>
+        <textarea rows="2" id="note-gov" placeholder="Résistances managériales, risques AMF, écart conformité déclaré vs réel..."></textarea>
+      </div>
+      <div class="generate-wrap">
+        <div class="wizard-nav" style="margin-bottom:1.5rem">
+          <button class="btn-ghost" onclick="goStep(3)">← Retour</button>
+          <span class="wizard-nav-info">Étape 4 / 4</span>
+          <span></span>
+        </div>
+        <button class="btn-generate" id="btn-gen" onclick="generatePlan()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Générer mon plan d'actions
+        </button>
+        <p style="font-size:12px;color:var(--text3);margin-top:.75rem">Appel API Anthropic · ~15 secondes</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── RESULTS ── -->
+<section id="results">
+  <div class="results-header">
+    <p class="section-label">Synthèse du diagnostic</p>
+    <h2 id="results-org-name">Diagnostic IA</h2>
+    <p id="results-date" style="color:var(--text2);font-size:13px"></p>
+  </div>
+  <div class="section-inner" style="padding-top:1rem">
+
+    <!-- SCORES -->
+    <p class="section-label">Scores par axe</p>
+    <div class="scores-grid">
+      <div class="score-card" id="score-card-roles">
+        <div class="score-num" id="score-roles">—</div>
+        <div class="score-label">Augmentation des rôles</div>
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-roles" style="width:0%"></div></div>
+      </div>
+      <div class="score-card" id="score-card-sdlc">
+        <div class="score-num" id="score-sdlc">—</div>
+        <div class="score-label">Pratiques SDLC</div>
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-sdlc" style="width:0%"></div></div>
+      </div>
+      <div class="score-card" id="score-card-gov">
+        <div class="score-num" id="score-gov">—</div>
+        <div class="score-label">Gouvernance IA</div>
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-gov" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- RADAR + LEGEND -->
+    <div class="radar-wrap">
+      <svg id="radar-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- grid -->
+        <polygon points="150,30 270,105 270,195 150,270 30,195 30,105" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <polygon points="150,62 238,116 238,184 150,238 62,184 62,116" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <polygon points="150,94 210,127 210,173 150,206 90,173 90,127" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <polygon points="150,126 180,138 180,162 150,174 120,162 120,138" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <!-- axes -->
+        <line x1="150" y1="150" x2="150" y2="30" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <line x1="150" y1="150" x2="270" y2="105" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <line x1="150" y1="150" x2="270" y2="195" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <line x1="150" y1="150" x2="150" y2="270" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <line x1="150" y1="150" x2="30" y2="195" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <line x1="150" y1="150" x2="30" y2="105" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <!-- data polygon -->
+        <polygon id="radar-poly" points="150,150 150,150 150,150 150,150 150,150 150,150"
+          fill="rgba(79,195,247,0.15)" stroke="#4fc3f7" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- dots -->
+        <circle id="rd-0" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <circle id="rd-1" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <circle id="rd-2" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <circle id="rd-3" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <circle id="rd-4" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <circle id="rd-5" cx="150" cy="150" r="4" fill="#4fc3f7"/>
+        <!-- labels -->
+        <text x="150" y="20" text-anchor="middle" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">Rôles Dev</text>
+        <text x="282" y="104" text-anchor="start" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">Rôles QA</text>
+        <text x="282" y="200" text-anchor="start" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">Rôles PO</text>
+        <text x="150" y="286" text-anchor="middle" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">SDLC</text>
+        <text x="18" y="200" text-anchor="end" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">Gov.</text>
+        <text x="18" y="104" text-anchor="end" fill="rgba(136,146,164,0.9)" font-size="11" font-family="Inter,sans-serif">Rôles Archi</text>
+      </svg>
+
+      <div class="radar-legend">
+        <p class="legend-title">Synthèse par dimension</p>
+        <div id="legend-items"></div>
+      </div>
+    </div>
+
+    <!-- PLAN D'ACTIONS -->
+    <div class="plan-section">
+      <h3 class="plan-title">Plan d'actions personnalisé</h3>
+      <div class="horizon-tabs">
+        <button class="h-tab active" onclick="showHorizon('h1', this)">0 – 3 mois</button>
+        <button class="h-tab" onclick="showHorizon('h2', this)">3 – 12 mois</button>
+        <button class="h-tab" onclick="showHorizon('h3', this)">12 mois +</button>
+      </div>
+      <div id="plan-loading" class="plan-loading" style="display:none">
+        <div class="spinner"></div>
+        <p>Génération du plan en cours...</p>
+        <p style="font-size:12px;margin-top:.25rem;color:var(--text3)">Samiha analyse vos observations · Priorisation par impact</p>
+      </div>
+      <div id="actions-h1" class="actions-container active"></div>
+      <div id="actions-h2" class="actions-container"></div>
+      <div id="actions-h3" class="actions-container"></div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--card-border)">
+      <button class="btn-primary" onclick="window.print()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm1-4h4"/></svg>
+        Exporter PDF
+      </button>
+      <button class="btn-ghost" onclick="downloadJSON()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Exporter JSON
+      </button>
+      <button class="btn-ghost" onclick="resetDiag()" style="margin-left:auto">
+        ↺ Nouveau diagnostic
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="section-inner">
+    <p class="section-label">Offre de services</p>
+    <h2 class="section-title">Au-delà du diagnostic</h2>
+    <p class="section-sub">Chaque rapport ouvre la porte à un mandat. Voici comment l'accompagnement se poursuit.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <span class="service-icon">◎</span>
+        <div class="service-name">Diagnostic complet</div>
+        <p class="service-desc">Atelier facilité de 3h avec votre équipe TI. Rapport détaillé, plan d'actions personnalisé, restitution COPIL incluse.</p>
+        <div class="service-price">À partir de 3 500 $</div>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">⬡</span>
+        <div class="service-name">Accompagnement transformation</div>
+        <p class="service-desc">Mandat trimestriel pour implémenter le plan d'actions. Coaching des rôles, intégration IA dans le SDLC, jalons mesurés.</p>
+        <div class="service-price">Sur devis · 3–6 mois</div>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">✦</span>
+        <div class="service-name">Gouvernance IA & conformité</div>
+        <p class="service-desc">Politique d'usage IA, registre des risques, préparation AMF/Loi 25. Livrables prêts à présenter en conseil d'administration.</p>
+        <div class="service-price">Sur devis · Mission ciblée</div>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">◈</span>
+        <div class="service-name">Formation équipes</div>
+        <p class="service-desc">Ateliers pratiques sur l'IA augmentée pour Dev, QA et PO. Formats demi-journée ou journée complète, en présence ou en ligne.</p>
+        <div class="service-price">2 200 $ / journée</div>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">⌘</span>
+        <div class="service-name">Hub Gen AI · Copilot adoption</div>
+        <p class="service-desc">Déploiement structuré de GitHub Copilot ou Azure OpenAI au sein de vos équipes. Mesure de l'adoption, tableau de bord ROI.</p>
+        <div class="service-price">Sur devis</div>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">◉</span>
+        <div class="service-name">Conférences & LinkedIn Live</div>
+        <p class="service-desc">Intervention dans vos événements internes, conférences sectorielles ou webinaires sur la transformation IA du SDLC.</p>
+        <div class="service-price">Selon format et distance</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:3rem">
+      <a href="mailto:salhisamiha83@gmail.com" class="btn-primary">Discutons de votre contexte →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>Samiha Salhi-Kacher &nbsp;·&nbsp; Intégratrice IA · Accélération &amp; Gouvernance &nbsp;·&nbsp; Montréal, QC</p>
+  <p style="margin-top:.5rem">
+    <a href="https://www.linkedin.com/in/samiha-salhi-kacher-173a921a/" target="_blank" rel="noopener">LinkedIn</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:salhisamiha83@gmail.com">salhisamiha83@gmail.com</a>
+    &nbsp;·&nbsp;
+    438 870-2551
+  </p>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   CONFIGURATION — mettre votre clé API ici
+   ═══════════════════════════════════════════════ */
+const API_KEY = 'sk-ant-VOTRE-CLE-ICI';
+
+/* ── SYSTEM PROMPT — Samiha, Conseillère Principale IA ── */
+const SYSTEM_PROMPT = `Tu es Samiha, conseillère principale en IA générative avec une expertise profonde en transformation organisationnelle, SDLC et gouvernance IA. Tu travailles avec des organisations québécoises — institutions financières, assureurs, entreprises technologiques et organismes publics — pour les aider à mesurer et accélérer leur maturité dans l'utilisation de l'IA.
+
+Ton approche est pragmatique, ancrée dans la réalité terrain des équipes TI québécoises : tu connais les contraintes réglementaires (AMF, Loi 25, LPRPDE), les enjeux de souveraineté des données, et les dynamiques culturelles particulières du marché québécois.
+
+Tu génères des plans d'actions sur 3 horizons temporels :
+- Horizon 1 — 0 à 3 mois : actions d'activation rapide, gains immédiats, fondations essentielles
+- Horizon 2 — 3 à 12 mois : ancrage des pratiques, transformation des processus SDLC, gouvernance formalisée
+- Horizon 3 — 12 mois et plus : transformation organisationnelle profonde, leadership IA, avantage concurrentiel durable
+
+Chaque action doit être :
+- Concrète, réalisable et mesurable dans le contexte québécois
+- Attribuée à un rôle spécifique (Dev, QA, PO, Architecte, DevOps, RSSI, Management, Direction TI, Tous)
+- Assortie d'un indicateur d'impact court (ex: "Réduction 40% du temps de revue", "Conformité Loi 25", "ROI mesurable sous 90 jours")
+- Rédigée en français professionnel québécois, directe et sans jargon inutile
+
+Tu réponds UNIQUEMENT avec du JSON valide, sans markdown, sans balises, sans explication.`;
+
+/* ── STATE ── */
+const state = {
+  step: 1,
+  scores: { roles: 0, sdlc: 0, gov: 0 },
+  plan: { h1: [], h2: [], h3: [] },
+  rawData: {}
+};
+
+/* ── SLIDER ── */
+function updateSlider(id) {
+  const val = document.getElementById('s-' + id).value;
+  document.getElementById('v-' + id).textContent = val;
+}
+
+/* ── RADIO PILLS ── */
+function selectRadio(el, name, val) {
+  el.closest('.radio-group').querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+/* ── WIZARD NAVIGATION ── */
+function goStep(n) {
+  document.getElementById('panel-' + state.step).classList.remove('active');
+  document.getElementById('panel-' + n).classList.add('active');
+
+  document.querySelectorAll('.wp-step').forEach(s => {
+    const sn = parseInt(s.dataset.step);
+    s.classList.remove('active', 'done');
+    if (sn < n) s.classList.add('done');
+    if (sn === n) s.classList.add('active');
+  });
+
+  // update done checkmarks
+  document.querySelectorAll('.wp-step.done .wp-dot').forEach(d => {
+    if (!d.innerHTML.includes('✓')) d.innerHTML = '✓';
+  });
+
+  state.step = n;
+  document.getElementById('diagnostic').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── COLLECT DATA ── */
+function collectData() {
+  // Roles scores
+  const sliders = [
+    ['dev-1','dev-2','dev-3'],
+    ['qa-1','qa-2','qa-3'],
+    ['po-1','po-2','po-3'],
+    ['arch-1','arch-2','arch-3']
+  ];
+  let roleTotal = 0, roleMax = 0;
+  const roleDims = [];
+  sliders.forEach(group => {
+    const avg = group.reduce((s,id) => s + parseInt(document.getElementById('s-'+id).value), 0) / group.length;
+    roleDims.push(avg);
+    roleTotal += avg;
+    roleMax += 5;
+  });
+  const roleScore = Math.round((roleTotal / roleMax) * 100);
+
+  // SDLC scores
+  const sdlcLevels = { 'Absent': 0, 'Partiel': 1, 'Intégré': 2, 'Optimisé': 3 };
+  const sdlcPractices = ['cicd','codereview','bdd','doc','planning','monitoring'];
+  let sdlcTotal = 0;
+  sdlcPractices.forEach(name => {
+    const sel = document.querySelector(`.radio-group[data-name="${name}"] .radio-pill.selected`);
+    sdlcTotal += sel ? (sdlcLevels[sel.textContent] || 0) : 0;
+  });
+  const sdlcScore = Math.round((sdlcTotal / (sdlcPractices.length * 3)) * 100);
+
+  // Gov scores
+  const govToggles = ['g-policy','g-training','g-review','g-risk','g-bias','g-incident','g-data','g-loi25','g-audit','g-champ','g-budget','g-okr'];
+  const govChecked = govToggles.filter(id => document.getElementById(id)?.checked).length;
+  const govScore = Math.round((govChecked / govToggles.length) * 100);
+
+  state.scores = { roles: roleScore, sdlc: sdlcScore, gov: govScore };
+  state.rawData = {
+    org: document.getElementById('org-name').value || 'Organisation',
+    sector: document.getElementById('sector').value,
+    teamSize: document.getElementById('team-size').value,
+    methodology: document.getElementById('methodology').value,
+    tools: document.getElementById('tools').value,
+    budget: document.getElementById('budget').value,
+    roleDims,
+    sdlcTotal,
+    govChecked,
+    noteRoles: document.getElementById('note-roles')?.value || '',
+    noteSdlc: document.getElementById('note-sdlc')?.value || '',
+    noteGov: document.getElementById('note-gov')?.value || '',
+    noteProfil: document.getElementById('note-profil')?.value || '',
+    scores: state.scores
+  };
+  return state.rawData;
+}
+
+/* ── RADAR ── */
+function drawRadar(dims) {
+  // 6 axes: dev, qa, po, sdlc, gov, arch
+  const cx = 150, cy = 150, maxR = 120;
+  const angles = [-90, -30, 30, 90, 150, 210].map(d => d * Math.PI / 180);
+  const values = [
+    dims[0] / 5,
+    dims[1] / 5,
+    dims[2] / 5,
+    state.scores.sdlc / 100,
+    state.scores.gov / 100,
+    dims[3] / 5
+  ];
+
+  const pts = values.map((v, i) => {
+    const r = v * maxR;
+    return [cx + r * Math.cos(angles[i]), cy + r * Math.sin(angles[i])];
+  });
+
+  document.getElementById('radar-poly').setAttribute('points', pts.map(p => p.join(',')).join(' '));
+  pts.forEach((p, i) => {
+    const dot = document.getElementById('rd-' + i);
+    dot.setAttribute('cx', p[0]);
+    dot.setAttribute('cy', p[1]);
+  });
+}
+
+/* ── LEGEND ── */
+function buildLegend(dims) {
+  const items = [
+    { label: 'Rôles Dev', val: Math.round(dims[0] / 5 * 100) },
+    { label: 'Rôles QA', val: Math.round(dims[1] / 5 * 100) },
+    { label: 'Rôles PO', val: Math.round(dims[2] / 5 * 100) },
+    { label: 'Rôles Architecte', val: Math.round(dims[3] / 5 * 100) },
+    { label: 'Pratiques SDLC', val: state.scores.sdlc },
+    { label: 'Gouvernance IA', val: state.scores.gov }
+  ];
+  const container = document.getElementById('legend-items');
+  container.innerHTML = items.map(it => `
+    <div class="legend-item">
+      <div class="legend-dot"></div>
+      <span class="legend-text">${it.label}</span>
+      <span class="legend-val">${it.val}%</span>
+    </div>
+  `).join('');
+}
+
+/* ── SCORE CARDS ── */
+function renderScores() {
+  const { roles, sdlc, gov } = state.scores;
+  const scoreColor = v => v >= 60 ? '' : v >= 35 ? 'warn' : 'danger';
+
+  ['roles','sdlc','gov'].forEach(axis => {
+    const v = state.scores[axis];
+    document.getElementById('score-' + axis).textContent = v + '%';
+    document.getElementById('bar-' + axis).style.width = v + '%';
+    const card = document.getElementById('score-card-' + axis);
+    card.className = 'score-card ' + scoreColor(v);
+  });
+}
+
+/* ── RENDER PLAN ── */
+function renderPlan(plan) {
+  ['h1', 'h2', 'h3'].forEach(horizon => {
+    const container = document.getElementById('actions-' + horizon);
+    if (!container) return;
+    const actions = plan[horizon] || [];
+    if (actions.length === 0) {
+      container.innerHTML = '<p style="color:var(--text2);font-size:13px;padding:.5rem 0">Aucune action prioritaire pour cet horizon.</p>';
+      return;
+    }
+    container.innerHTML = actions.map(a => `
+      <div class="action-card">
+        <div class="action-role">${a.role || 'Général'}</div>
+        <p class="action-text">${a.action || a}</p>
+        <span class="action-impact">${a.impact || 'À prioriser'}</span>
+      </div>
+    `).join('');
+  });
+  state.plan = plan;
+}
+
+/* ── FALLBACK PLAN (sans clé API) ── */
+function fallbackPlan(data) {
+  const { scores } = data;
+  const plan = { h1: [], h2: [], h3: [] };
+
+  if (scores.roles < 50) {
+    plan.h1.push({ role: 'Dev', action: 'Autoriser et cadrer l\'usage de GitHub Copilot pour l\'équipe de développement. Rédiger une politique d\'usage minimale en 2 semaines et la diffuser à toute l\'équipe TI.', impact: 'Gain de productivité · Mise en place rapide' });
+    plan.h1.push({ role: 'QA', action: 'Expérimenter la génération automatique de cas de tests BDD avec un outil IA sur un projet pilote ciblé. Mesurer la réduction du temps de rédaction des scénarios.', impact: 'Couverture de tests +30%' });
+  }
+  if (scores.sdlc < 50) {
+    plan.h1.push({ role: 'DevOps', action: 'Intégrer une étape d\'analyse IA (linting, sécurité statique) dans le pipeline CI/CD existant. Commencer par un outil open source pour valider l\'approche.', impact: 'Détection précoce des défauts' });
+    plan.h2.push({ role: 'QA', action: 'Mettre en place l\'assistance IA dans les revues de code. Former l\'équipe sur les prompts de revue efficaces et établir des conventions partagées dans Confluence.', impact: 'Réduction 40% du temps de revue' });
+  }
+  if (scores.gov < 40) {
+    plan.h1.push({ role: 'Management', action: 'Rédiger et diffuser une politique d\'usage de l\'IA adaptée au contexte québécois. Identifier les données sensibles ne devant pas transiter par des LLM externes (données personnelles, informations confidentielles clients).', impact: 'Urgent · Conformité Loi 25' });
+    plan.h2.push({ role: 'RSSI / Archi', action: 'Produire un inventaire complet des flux de données vers les APIs LLM. Évaluer la conformité Loi 25 et LPRPDE. Identifier les écarts et proposer un plan de remédiation.', impact: 'Réduction du risque réglementaire' });
+    plan.h3.push({ role: 'Direction TI', action: 'Planifier un audit IA annuel indépendant. Intégrer les objectifs de maturité IA dans les OKR organisationnels et le plan stratégique TI.', impact: 'Maturité gouvernance · AMF-ready' });
+  }
+  plan.h2.push({ role: 'PO', action: 'Intégrer l\'IA dans la rédaction des user stories et la priorisation du backlog. Mesurer le gain de temps après 2 sprints et ajuster le processus en conséquence.', impact: 'Vélocité équipe +20%' });
+  plan.h2.push({ role: 'Dev', action: 'Former l\'équipe sur le pair programming avec l\'IA. Établir des conventions de prompts internes partagées et créer une bibliothèque de prompts réutilisables par rôle.', impact: 'Qualité de code · Transfert de connaissances' });
+  plan.h3.push({ role: 'Architecte', action: 'Définir une stack IA interne souveraine : modèles approuvés, infrastructure hébergée au Québec si possible, gouvernance des modèles et des données. Documenter les critères de sélection des outils IA.', impact: 'Souveraineté numérique · Scalabilité' });
+  plan.h3.push({ role: 'Tous les rôles', action: 'Lancer un programme de formation continue sur l\'IA augmentée adapté à chaque rôle. Créer des champions IA par équipe et mesurer le taux d\'adoption trimestriellement via un tableau de bord partagé.', impact: 'Transformation culturelle · ROI mesurable' });
+
+  return plan;
+}
+
+/* ── APPEL API ANTHROPIC ── */
+async function callAnthropicAPI(data) {
+  const userPrompt = `Voici les données du diagnostic de maturité IA pour cette organisation :
+
+PROFIL ORGANISATION
+- Nom : ${data.org || 'Non précisé'}
+- Secteur : ${data.sector || 'Non précisé'}
+- Taille équipe TI : ${data.teamSize || 'Non précisée'}
+- Méthodologie : ${data.methodology || 'Non précisée'}
+- Outils IA actuellement utilisés : ${data.tools || 'Aucun mentionné'}
+- Budget IA annuel : ${data.budget || 'Non précisé'}
+
+SCORES DE MATURITÉ
+- Augmentation des rôles : ${data.scores.roles}% ${data.scores.roles < 35 ? '(niveau débutant)' : data.scores.roles < 65 ? '(niveau intermédiaire)' : '(niveau avancé)'}
+- Pratiques SDLC : ${data.scores.sdlc}% ${data.scores.sdlc < 35 ? '(niveau débutant)' : data.scores.sdlc < 65 ? '(niveau intermédiaire)' : '(niveau avancé)'}
+- Gouvernance IA : ${data.scores.gov}% ${data.scores.gov < 35 ? '(niveau débutant — risque réglementaire)' : data.scores.gov < 65 ? '(niveau intermédiaire)' : '(niveau avancé)'}
+
+OBSERVATIONS TERRAIN (NOTES FACILITATEUR)
+- Rôles : ${data.noteRoles || 'Aucune observation'}
+- SDLC : ${data.noteSdlc || 'Aucune observation'}
+- Gouvernance : ${data.noteGov || 'Aucune observation'}
+
+Génère le plan d'actions en JSON strict selon cette structure exacte :
+{
+  "h1": [
+    {
+      "role": "Dev|QA|PO|Architecte|DevOps|RSSI|Management|Direction TI|Tous",
+      "action": "Description précise de l'action à mener, avec le contexte québécois si pertinent",
+      "impact": "Indicateur de résultat mesurable court"
+    }
+  ],
+  "h2": [ ... ],
+  "h3": [ ... ]
+}
+
+Contraintes :
+- h1 (0–3 mois) : 3 à 4 actions prioritaires, gains rapides
+- h2 (3–12 mois) : 3 à 4 actions d'ancrage
+- h3 (12 mois+) : 2 à 3 actions de transformation
+- JSON uniquement, aucun texte autour`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1800,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const errBody = await response.json().catch(() => ({}));
+    throw new Error(`API ${response.status} — ${errBody?.error?.message || response.statusText}`);
+  }
+
+  const result = await response.json();
+  const text = result.content?.[0]?.text?.trim() || '';
+  return parseAPIResponse(text);
+}
+
+/* ── PARSE RÉPONSE API ── */
+function parseAPIResponse(text) {
+  // Nettoyer les éventuels backticks markdown
+  const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(clean);
+  } catch (e) {
+    // Tentative de récupération : extraire le premier objet JSON du texte
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Réponse non parseable : ' + clean.slice(0, 100));
+    parsed = JSON.parse(match[0]);
+  }
+
+  // Normaliser les clés — accepte h1/h2/h3 ou les variantes textuelles
+  const normalize = (obj) => {
+    const keys = Object.keys(obj);
+    const h1 = obj['h1'] || obj['0-3 mois'] || obj['0_3'] || obj[keys[0]] || [];
+    const h2 = obj['h2'] || obj['3-12 mois'] || obj['3_12'] || obj[keys[1]] || [];
+    const h3 = obj['h3'] || obj['12 mois+'] || obj['12+'] || obj[keys[2]] || [];
+    return { h1, h2, h3 };
+  };
+
+  return normalize(parsed);
+}
+
+/* ── GENERATE ── */
+async function generatePlan() {
+  const data = collectData();
+  const btn = document.getElementById('btn-gen');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Génération en cours...';
+
+  // Afficher la section résultats
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('results-org-name').textContent = 'Diagnostic IA · ' + (data.org || 'Organisation');
+  document.getElementById('results-date').textContent = new Date().toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  renderScores();
+  drawRadar(data.roleDims || [3, 2, 2, 2]);
+  buildLegend(data.roleDims || [3, 2, 2, 2]);
+
+  document.getElementById('plan-loading').style.display = 'block';
+
+  const apiConfigured = API_KEY && API_KEY !== 'sk-ant-VOTRE-CLE-ICI' && API_KEY.startsWith('sk-ant-');
+
+  if (apiConfigured) {
+    try {
+      const plan = await callAnthropicAPI(data);
+      document.getElementById('plan-loading').style.display = 'none';
+      renderPlan(plan);
+    } catch (err) {
+      console.error('Erreur API Anthropic :', err);
+      document.getElementById('plan-loading').style.display = 'none';
+      showAPIError(err.message);
+      const plan = fallbackPlan(data);
+      renderPlan(plan);
+    }
+  } else {
+    // Mode démo — plan de fallback sans clé API
+    await new Promise(r => setTimeout(r, 1600));
+    document.getElementById('plan-loading').style.display = 'none';
+    renderPlan(fallbackPlan(data));
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> Plan généré';
+}
+
+/* ── AFFICHAGE ERREUR API ── */
+function showAPIError(msg) {
+  const container = document.getElementById('actions-h1').parentElement;
+  const banner = document.createElement('div');
+  banner.style.cssText = 'background:rgba(239,108,108,0.08);border:1px solid rgba(239,108,108,0.25);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;color:#ef6c6c;';
+  banner.innerHTML = `<strong>Erreur API :</strong> ${msg} — plan de fallback affiché.`;
+  container.insertBefore(banner, container.firstChild);
+  setTimeout(() => banner.remove(), 8000);
+}
+
+/* ── HORIZON TABS ── */
+function showHorizon(h, el) {
+  document.querySelectorAll('.h-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.actions-container').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('actions-' + h).classList.add('active');
+}
+
+/* ── EXPORT JSON ── */
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify({ ...state.rawData, plan: state.plan, generatedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'diagnostic-ia-' + (state.rawData.org || 'organisation').toLowerCase().replace(/\s+/g,'-') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ── RESET ── */
+function resetDiag() {
+  document.getElementById('results').classList.remove('visible');
+  goStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

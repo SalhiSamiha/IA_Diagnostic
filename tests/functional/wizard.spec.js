@@ -141,12 +141,13 @@ test.describe('Wizard de diagnostic — 4 étapes', () => {
     await page.locator('#panel-2 .btn-primary').click();
     await page.locator('#panel-3 .btn-primary').click();
 
-    const toggle = page.locator('#g-policy');
-    const initial = await toggle.isChecked();
-    await toggle.click();
-    expect(await toggle.isChecked()).toBe(!initial);
-    await toggle.click();
-    expect(await toggle.isChecked()).toBe(initial);
+    const checkbox = page.locator('#g-policy');
+    const toggleLabel = page.locator('label.toggle:has(#g-policy)');
+    const initial = await checkbox.isChecked();
+    await toggleLabel.click();
+    expect(await checkbox.isChecked()).toBe(!initial);
+    await toggleLabel.click();
+    expect(await checkbox.isChecked()).toBe(initial);
   });
 
   test('Étape 4 — bouton "Générer" est visible', async ({ page }) => {
@@ -211,7 +212,7 @@ test.describe('Wizard de diagnostic — 4 étapes', () => {
     await expect(page.locator('#actions-h1')).not.toHaveClass(/active/);
 
     // H3
-    await page.locator('.h-tab', { hasText: '12 mois' }).click();
+    await page.locator('.h-tab', { hasText: '12 mois +' }).click();
     await expect(page.locator('#actions-h3')).toHaveClass(/active/);
   });
 

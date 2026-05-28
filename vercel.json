@@ -10,13 +10,7 @@
   "routes": [
     {
       "src": "/api/diagnose",
-      "dest": "/api/diagnose.js",
-      "methods": ["POST"],
-      "headers": {
-        "Access-Control-Allow-Origin": "$VERCEL_URL",
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
+      "dest": "/api/diagnose.js"
     },
     {
       "src": "/(.+\\.(jpg|jpeg|png|gif|svg|ico|webp|css|js|woff|woff2|ttf|eot))",

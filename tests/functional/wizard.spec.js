@@ -201,7 +201,8 @@ test.describe('Wizard de diagnostic — 4 étapes', () => {
 
     await page.locator('#panel-1 .btn-primary').click();
     await page.locator('#panel-2 .btn-primary').click();
-    await page.locator('#panel-3 .btn-primary').click();
+    await page.locator('#panel-3 .btn-primary').scrollIntoViewIfNeeded();
+    await page.locator('#panel-3 .btn-primary').click({ force: true });
     await page.locator('#btn-gen').click();
 
     await expect(page.locator('#results')).toHaveClass(/visible/, { timeout: 30_000 });

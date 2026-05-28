@@ -1,0 +1,16 @@
+{
+  "name": "ia-diagnostic-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:functional": "playwright test --project=chromium --project=firefox --project=webkit",
+    "test:api": "playwright test --project=api",
+    "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari --project=tablet"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

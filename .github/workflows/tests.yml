@@ -1,0 +1,150 @@
+name: Tests E2E — Playwright
+
+on:
+  push:
+    branches: [main]
+  deployment_status:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Résout l'URL cible (production ou preview Vercel) ──────────────
+  resolve-url:
+    name: Résoudre l'URL de déploiement
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success')
+    outputs:
+      base_url: ${{ steps.set-url.outputs.base_url }}
+    steps:
+      - name: Déterminer BASE_URL
+        id: set-url
+        run: |
+          if [[ "${{ github.event_name }}" == "deployment_status" ]]; then
+            echo "base_url=${{ github.event.deployment_status.target_url }}" >> $GITHUB_OUTPUT
+          else
+            echo "base_url=https://ia-diagnostic.vercel.app" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Tests fonctionnels — Desktop 3 navigateurs ────────────────────
+  test-functional:
+    name: Fonctionnel — ${{ matrix.browser }}
+    needs: resolve-url
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer le navigateur Playwright
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Lancer les tests fonctionnels
+        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          BASE_URL: ${{ needs.resolve-url.outputs.base_url }}
+
+      - name: Publier le rapport
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-fonctionnel-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 14
+
+  # ── Tests API ─────────────────────────────────────────────────────
+  test-api:
+    name: Tests API
+    needs: resolve-url
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Lancer les tests API
+        run: npx playwright test --project=api
+        env:
+          BASE_URL: ${{ needs.resolve-url.outputs.base_url }}
+
+      - name: Publier le rapport
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-api
+          path: playwright-report/
+          retention-days: 14
+
+  # ── Tests UI — Mobile & Tablette ──────────────────────────────────
+  test-mobile:
+    name: UI Mobile & Tablette
+    needs: resolve-url
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer les navigateurs mobile (Chromium + WebKit)
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Lancer les tests mobile et tablette
+        run: npx playwright test --project=mobile-chrome --project=mobile-safari --project=tablet
+        env:
+          BASE_URL: ${{ needs.resolve-url.outputs.base_url }}
+
+      - name: Publier le rapport
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-mobile
+          path: playwright-report/
+          retention-days: 14
+
+  # ── Résumé final ──────────────────────────────────────────────────
+  summary:
+    name: Résumé des tests
+    needs: [test-functional, test-api, test-mobile]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Statut global
+        run: |
+          echo "## Résultats des tests E2E" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Statut |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Fonctionnel (Chromium) | ${{ needs.test-functional.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fonctionnel (Firefox)  | ${{ needs.test-functional.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fonctionnel (WebKit)   | ${{ needs.test-functional.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API                    | ${{ needs.test-api.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Mobile & Tablette      | ${{ needs.test-mobile.result }} |" >> $GITHUB_STEP_SUMMARY

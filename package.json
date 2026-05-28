@@ -1,0 +1,19 @@
+{
+  "name": "ia-diagnostic",
+  "version": "1.0.0",
+  "description": "Diagnostic de maturité IA pour les équipes de développement",
+  "homepage": "https://ia-diagnostic.vercel.app",
+  "scripts": {
+    "test": "echo 'Add your test command here'",
+    "build": "echo 'Build completed'"
+  },
+  "keywords": [
+    "IA",
+    "diagnostic",
+    "maturity",
+    "SDLC"
+  ],
+  "author": "Samiha Salhi",
+  "license": "MIT",
+  "devDependencies": {}
+}

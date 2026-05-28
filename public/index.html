@@ -780,6 +780,50 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   color: var(--accent);
 }
 
+/* ── HERO AVATAR ── */
+.hero-avatar {
+  margin-bottom: 1.75rem;
+}
+.avatar-img {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 2px solid var(--accent-border);
+  box-shadow: 0 0 0 6px var(--accent-dim), 0 8px 32px rgba(79,195,247,0.15);
+  display: block;
+}
+
+/* ── HERO SOCIAL LINKS ── */
+.hero-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text2);
+  text-decoration: none;
+  letter-spacing: .03em;
+  transition: all .2s;
+  background: transparent;
+}
+.btn-social:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.btn-social svg { flex-shrink: 0; }
+
 /* ── FOOTER ── */
 footer {
   position: relative;
@@ -816,6 +860,9 @@ footer a { color: var(--text2); text-decoration: none; }
 
 <!-- ── HERO ── -->
 <div class="hero">
+  <div class="hero-avatar">
+    <img src="samiha.jpg" alt="Samiha Salhi-Kacher" class="avatar-img">
+  </div>
   <p class="hero-eyebrow">Samiha Salhi-Kacher · Intégratrice IA · 18 ans d'expérience</p>
   <h1>Votre équipe utilise l'IA.<br>Mais <em>comment</em>, vraiment ?</h1>
   <p class="hero-sub">Ingénieure en systèmes d'information, 18 ans en transformation TI — dont 3 ans en IA générative appliquée en contexte bancaire et assurance. Je mesure la maturité réelle de vos équipes et génère un plan d'actions ancré dans votre terrain.</p>
@@ -825,6 +872,16 @@ footer a { color: var(--text2); text-decoration: none; }
       Démarrer le diagnostic
     </a>
     <a href="#services" class="btn-ghost">Voir les services</a>
+  </div>
+  <div class="hero-social">
+    <a href="https://www.linkedin.com/in/samiha-salhi-kacher-173a921a" target="_blank" rel="noopener" class="btn-social">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+    <a href="https://chatgpt.com/g/g-6849784ed24c8191b206030577627541-coach-qa-developpement-logiciel-moderne" target="_blank" rel="noopener" class="btn-social">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/><path d="M12 8v4l3 3"/></svg>
+      Coach QA · GPT
+    </a>
   </div>
   <div class="hero-stats">
     <div class="stat">
@@ -1390,7 +1447,9 @@ footer a { color: var(--text2); text-decoration: none; }
 <footer>
   <p>Samiha Salhi-Kacher &nbsp;·&nbsp; Intégratrice IA · Accélération &amp; Gouvernance &nbsp;·&nbsp; Montréal, QC</p>
   <p style="margin-top:.5rem">
-    <a href="https://www.linkedin.com/in/samiha-salhi-kacher-173a921a/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://www.linkedin.com/in/samiha-salhi-kacher-173a921a" target="_blank" rel="noopener">LinkedIn</a>
+    &nbsp;·&nbsp;
+    <a href="https://chatgpt.com/g/g-6849784ed24c8191b206030577627541-coach-qa-developpement-logiciel-moderne" target="_blank" rel="noopener">Coach QA · GPT</a>
     &nbsp;·&nbsp;
     <a href="mailto:salhisamiha83@gmail.com">salhisamiha83@gmail.com</a>
     &nbsp;·&nbsp;

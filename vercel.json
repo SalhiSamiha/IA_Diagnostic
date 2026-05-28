@@ -3,14 +3,17 @@
   "buildCommand": "echo 'Build complete'",
   "outputDirectory": "public",
   "functions": {
-    "api/diagnose.js": {
-      "maxDuration": 30
-    }
+    "api/diagnose.js": { "maxDuration": 30 },
+    "api/chat.js":     { "maxDuration": 20 }
   },
   "routes": [
     {
       "src": "/api/diagnose",
       "dest": "/api/diagnose.js"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "/api/chat.js"
     },
     {
       "src": "/(.+\\.(jpg|jpeg|png|gif|svg|ico|webp|css|js|woff|woff2|ttf|eot))",

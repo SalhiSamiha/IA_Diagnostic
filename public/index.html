@@ -977,6 +977,69 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
 }
+
+/* ── PLAYLIST ── */
+.playlist-wrap {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+.playlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 1.25rem;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--card-border);
+}
+.playlist-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.playlist-meta { font-size: 12px; color: var(--text2); }
+.playlist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  padding: .95rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  text-decoration: none;
+  transition: background .2s;
+}
+.playlist-item:last-child { border-bottom: none; }
+.playlist-item:hover { background: var(--accent-dim); }
+.playlist-num {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  color: var(--accent);
+  opacity: .3;
+  min-width: 30px;
+  line-height: 1.1;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+.playlist-item:hover .playlist-num { opacity: 1; }
+.playlist-info { flex: 1; }
+.playlist-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.45;
+  margin-bottom: .3rem;
+}
+.playlist-desc { font-size: 12px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.playlist-arrow {
+  color: var(--text3);
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: color .2s, transform .2s;
+}
+.playlist-item:hover .playlist-arrow { color: var(--accent); transform: translateX(4px); }
 .resource-card {
   background: var(--card);
   border: 1px solid var(--card-border);
@@ -1899,7 +1962,9 @@ footer a { color: var(--text2); text-decoration: none; }
   <div class="section-inner">
     <p class="section-label">Veille & Apprentissage</p>
     <h2 class="section-title">Ressources</h2>
-    <p class="section-sub">Vidéos, articles et outils sélectionnés pour accélérer votre transformation IA.</p>
+    <p class="section-sub">Vidéos, articles et capsules sélectionnés pour accélérer votre transformation IA.</p>
+
+    <div id="playlist-wrap"></div>
     <div class="resources-grid" id="resources-grid"></div>
   </div>
 </section>
@@ -2417,108 +2482,66 @@ async function exportToGitHub() {
    Types disponibles : 'Vidéo' | 'Article' | 'Outil' | 'Podcast' | 'LinkedIn'
    Pour une vidéo YouTube, renseignez youtubeId pour le thumbnail auto.
    ════════════════════════════════════════════════ */
+/* ── Playlist Coach QA & Dev — épisodes 1 à 8 dans l'ordre ── */
+const PLAYLIST = [
+  { ep: 1,     title: "Je suis analyste QA depuis 4 ans. Je sens que j'ai envie d'autre chose… mais quoi ?",                                                    desc: "Évolution de carrière QA — automatisation, lead, architecture, coaching ?",                                              url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-carriaeyre-coachqa-ugcPost-7341619527023042562-VLYi/' },
+  { ep: 2,     title: "On a désactivé nos tests automatisés dans la CI/CD. Ils prenaient trop de temps, et ça ralentissait nos livraisons.",                     desc: "Un choix courant, rarement documenté — et ses conséquences sur la qualité.",                                            url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-ciabrcd-devops-ugcPost-7341667460586106880-d9cL/' },
+  { ep: 3,     title: "J'ai écrit une stratégie de tests… mais personne ne la lit.",                                                                             desc: "Pourquoi les stratégies de tests restent dans un tiroir — et comment les rendre vivantes.",                              url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-qualitaezlogicielle-strataezgiedetests-ugcPost-7341902937247375361-PIGs/' },
+  { ep: '3.2', title: "Faire vivre la stratégie QA… sans réunion en plus",                                                                                      desc: "Intégrer la qualité dans les rituels Scrum existants — sans créer de réunions supplémentaires.",                        url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-strataezgiedetests-scrum-ugcPost-7342010792273190913-Bp9O/' },
+  { ep: 4,     title: "Comment prioriser les tests mobile natifs ?",                                                                                             desc: "iOS, Android, web — comment décider quoi tester en priorité quand les ressources sont limitées.",                       url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testingstrategy-mobiledevelopment-ugcPost-7341916522832928770-NKRt/' },
+  { ep: 5,     title: "On ne me laisse pas reviewer… et si c'était structurel ?",                                                                               desc: "Revues de code et partage de responsabilité — pourquoi le QA est souvent exclu, et comment changer ça.",                url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-revuesdecode-partagederesponsabilitaez-ugcPost-7342026574814191616-Ds0b/' },
+  { ep: 6,     title: "Changer d'outil de test… ou changer de posture ?",                                                                                       desc: "Cypress, Playwright, Selenium — le vrai problème n'est souvent pas l'outil.",                                           url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testautomation-cypress-ugcPost-7342034110200131584--5Sx/' },
+  { ep: 7,     title: "Faut-il passer l'ISTQB pour faire du QA ?",                                                                                              desc: "Certification vs expérience terrain — retour pragmatique sur la valeur réelle de l'ISTQB.",                             url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-istqb-formationqa-ugcPost-7351235352478588928-mJ5U/' },
+  { ep: 8,     title: "Comment répartir les tests automatisés dans la CI/CD ?",                                                                                  desc: "Quel feedback avez-vous besoin, et quand ? La question fondamentale que les équipes sous-estiment.",                    url: 'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coach-qa-dev-%C3%A9pisode-8-comment-ugcPost-7354168312177561604-zJbu/' },
+];
+
+/* ── Autres ressources (vidéos, articles, outils) ── */
 const RESOURCES = [
   {
     type: 'Vidéo',
-    title: 'Comment l\'IA transforme le développement logiciel moderne',
-    desc:  'Une introduction concrète à l\'intégration de l\'IA dans le SDLC — outils, pratiques et pièges à éviter.',
+    title: "Comment l'IA transforme le développement logiciel moderne",
+    desc:  "Une introduction concrète à l'intégration de l'IA dans le SDLC — outils, pratiques et pièges à éviter.",
     url:   'https://youtu.be/efnnIUGrG4o?si=fAOcTqLrSKd9xY7m',
     youtubeId: 'efnnIUGrG4o',
   },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 8 : Comment répartir les tests automatisés dans la CI/CD ?',
-    desc:  'Quelle feedback avez-vous besoin, et quand ? Une question fondamentale que les équipes sous-estiment souvent.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coach-qa-dev-%C3%A9pisode-8-comment-ugcPost-7354168312177561604-zJbu/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 7 : Faut-il passer l\'ISTQB pour faire du QA ?',
-    desc:  'Certification vs expérience terrain — faut-il vraiment l\'ISTQB pour démarrer en QA ? Retour pragmatique.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-istqb-formationqa-ugcPost-7351235352478588928-mJ5U/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 6 : Changer d\'outil de test… ou changer de posture ?',
-    desc:  'Cypress, Playwright, Selenium — le vrai problème n\'est souvent pas l\'outil mais la posture face à l\'automatisation.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testautomation-cypress-ugcPost-7342034110200131584--5Sx/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 5 : On ne me laisse pas reviewer… et si c\'était structurel ?',
-    desc:  'Revues de code et partage de responsabilité — pourquoi certaines équipes excluent le QA des revues, et comment changer ça.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-revuesdecode-partagederesponsabilitaez-ugcPost-7342026574814191616-Ds0b/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 4 : Comment prioriser les tests mobile natifs ?',
-    desc:  'iOS, Android, web — comment décider quoi tester en priorité quand les ressources sont limitées ? Stratégie concrète.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testingstrategy-mobiledevelopment-ugcPost-7341916522832928770-NKRt/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 3.2 : Faire vivre la stratégie QA… sans réunion en plus',
-    desc:  'Intégrer la qualité dans les rituels Scrum existants — refinement, sprint planning, reviews — sans créer de réunions supplémentaires.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-strataezgiedetests-scrum-ugcPost-7342010792273190913-Bp9O/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 3 : J\'ai écrit une stratégie de tests… mais personne ne la lit.',
-    desc:  'Pourquoi les stratégies de tests restent dans un tiroir — et comment les rendre vivantes et utiles au quotidien.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-qualitaezlogicielle-strataezgiedetests-ugcPost-7341902937247375361-PIGs/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 2 : On a désactivé nos tests automatisés dans la CI/CD. Ils prenaient trop de temps, et ça ralentissait nos livraisons.',
-    desc:  'Un choix courant, rarement documenté — et ses conséquences sur la qualité des livraisons. Que faire à la place ?',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-ciabrcd-devops-ugcPost-7341667460586106880-d9cL/',
-  },
-  {
-    type: 'LinkedIn',
-    title: 'Coach QA & Dev · Épisode 1 : Je suis analyste QA depuis 4 ans. Je sens que j\'ai envie d\'autre chose… mais quoi ?',
-    desc:  'Évolution de carrière QA — automatisation, lead, architecture, coaching ? Explorer les chemins possibles après 4 ans sur le terrain.',
-    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-carriaeyre-coachqa-ugcPost-7341619527023042562-VLYi/',
-  },
   // ── Ajoutez vos prochaines ressources ici ──────────────────────────
-  // {
-  //   type: 'Article',
-  //   title: 'Titre de l\'article',
-  //   desc:  'Description courte.',
-  //   url:   'https://...',
-  //   image: 'https://...',   // optionnel
-  // },
 ];
+
+function renderPlaylist() {
+  const wrap = document.getElementById('playlist-wrap');
+  if (!wrap || !PLAYLIST.length) return;
+  wrap.innerHTML = `
+    <p class="section-label" style="margin-bottom:.75rem">Série complète</p>
+    <div class="playlist-wrap">
+      <div class="playlist-header">
+        <span class="playlist-label">⬡ Coach QA &amp; Dev</span>
+        <span class="playlist-meta">${PLAYLIST.length} épisodes · LinkedIn</span>
+      </div>
+      ${PLAYLIST.map(ep => `
+        <a class="playlist-item" href="${ep.url}" target="_blank" rel="noopener">
+          <span class="playlist-num">${String(ep.ep).padStart(2,'0')}</span>
+          <div class="playlist-info">
+            <div class="playlist-title">${ep.title}</div>
+            <div class="playlist-desc">${ep.desc}</div>
+          </div>
+          <svg class="playlist-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>`).join('')}
+    </div>`;
+}
 
 function renderResources() {
   const grid = document.getElementById('resources-grid');
   if (!grid) return;
 
   grid.innerHTML = RESOURCES.map(r => {
-    const isVideo   = r.type === 'Vidéo' && r.youtubeId;
-    const thumbUrl  = r.youtubeId
-      ? `https://img.youtube.com/vi/${r.youtubeId}/maxresdefault.jpg`
-      : (r.image || '');
-
-    const TYPE_ICONS = {
-      'LinkedIn': `<svg width="32" height="32" viewBox="0 0 24 24" fill="rgba(79,195,247,0.6)"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`,
-      'Article':  `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>`,
-      'Podcast':  `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>`,
-      'Outil':    `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
-    };
-    const noThumbHTML = !thumbUrl ? `
-      <div class="resource-thumb-wrap" style="display:flex;align-items:center;justify-content:center;background:var(--bg3)">
-        ${TYPE_ICONS[r.type] || ''}
-      </div>` : '';
+    const isVideo  = r.type === 'Vidéo' && r.youtubeId;
+    const thumbUrl = r.youtubeId ? `https://img.youtube.com/vi/${r.youtubeId}/maxresdefault.jpg` : (r.image || '');
 
     const thumbHTML = isVideo ? `
       <div class="resource-video-wrap">
-        <iframe
-          src="https://www.youtube.com/embed/${r.youtubeId}"
-          title="${r.title}"
+        <iframe src="https://www.youtube.com/embed/${r.youtubeId}" title="${r.title}"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          loading="lazy">
-        </iframe>
+          allowfullscreen loading="lazy"></iframe>
       </div>` : thumbUrl ? `
       <div class="resource-thumb-wrap">
         <img class="resource-thumb" src="${thumbUrl}" alt="${r.title}" loading="lazy">
@@ -2526,7 +2549,7 @@ function renderResources() {
 
     return `
       <a class="resource-card" href="${r.url}" target="_blank" rel="noopener">
-        ${thumbHTML || noThumbHTML}
+        ${thumbHTML}
         <div class="resource-body">
           <span class="resource-type">${r.type}</span>
           <div class="resource-title">${r.title}</div>
@@ -2537,6 +2560,7 @@ function renderResources() {
   }).join('');
 }
 
+renderPlaylist();
 renderResources();
 
 /* ── RESET ── */

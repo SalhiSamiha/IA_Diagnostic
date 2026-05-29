@@ -3,18 +3,14 @@
   "buildCommand": "echo 'Build complete'",
   "outputDirectory": "public",
   "functions": {
-    "api/diagnose.js": { "maxDuration": 30 },
-    "api/chat.js":     { "maxDuration": 20 }
+    "api/diagnose.js":     { "maxDuration": 30 },
+    "api/chat.js":         { "maxDuration": 20 },
+    "api/export-drive.js": { "maxDuration": 30 }
   },
   "routes": [
-    {
-      "src": "/api/diagnose",
-      "dest": "/api/diagnose.js"
-    },
-    {
-      "src": "/api/chat",
-      "dest": "/api/chat.js"
-    },
+    { "src": "/api/diagnose",     "dest": "/api/diagnose.js" },
+    { "src": "/api/chat",         "dest": "/api/chat.js" },
+    { "src": "/api/export-drive", "dest": "/api/export-drive.js" },
     {
       "src": "/(.+\\.(jpg|jpeg|png|gif|svg|ico|webp|css|js|woff|woff2|ttf|eot))",
       "dest": "/$1"

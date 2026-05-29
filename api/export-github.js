@@ -167,17 +167,17 @@ export default async function handler(req, res) {
 
   if (!process.env.ANTHROPIC_API_KEY)
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY manquante' });
-  if (!process.env.GITHUB_TOKEN)
-    return res.status(500).json({ error: 'GITHUB_TOKEN manquant — voir configuration Vercel' });
-  if (!process.env.GITHUB_REPO)
-    return res.status(500).json({ error: 'GITHUB_REPO manquant (format: owner/repo)' });
+  if (!process.env.Github_Token)
+    return res.status(500).json({ error: 'Github_Token manquant — voir configuration Vercel' });
+  if (!process.env.Github_Repo)
+    return res.status(500).json({ error: 'Github_Repo manquant (format: owner/repo)' });
 
   const { data } = req.body || {};
   if (!data?.plan?.h1?.length)
     return res.status(400).json({ error: 'Plan H1 manquant — lancez d\'abord le diagnostic' });
 
-  const repo  = process.env.GITHUB_REPO;
-  const token = process.env.GITHUB_TOKEN;
+  const repo  = process.env.Github_Repo;
+  const token = process.env.Github_Token;
 
   // Étape 1 : Claude structure les issues via tool_use (pattern MCP)
   let structured;

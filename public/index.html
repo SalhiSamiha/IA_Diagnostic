@@ -143,7 +143,97 @@
             "@type": "Answer",
             "text": "La gouvernance IA englobe les politiques d'usage, la gestion des risques (biais, hallucinations, confidentialité), la conformité réglementaire et la supervision humaine des systèmes IA. En 2025, elle est critique car les régulateurs québécois (AMF, CAI) intensifient leurs exigences, et les organisations sans gouvernance formalisée s'exposent à des risques légaux, opérationnels et réputationnels significatifs."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Quelles sont les évolutions de carrière possibles pour un analyste QA après 4 ans d'expérience?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Après 4 ans en QA, plusieurs chemins s'ouvrent : (1) QA Automation Engineer — spécialisation en automatisation avec Cypress, Playwright ou Selenium, (2) SDET (Software Developer in Test) — rôle hybride dev/QA très recherché, (3) QA Lead ou Test Manager — coordination d'équipe et stratégie de test, (4) Coach QA — accompagnement des équipes dans l'adoption des bonnes pratiques, (5) Architecte qualité — conception des stratégies de test à l'échelle. L'essentiel est de clarifier ce qui vous attire : le technique, l'humain, ou la stratégie."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Faut-il désactiver les tests automatisés dans la CI/CD quand ils ralentissent les livraisons?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Non — désactiver les tests automatisés dans la CI/CD est une dette qualité qui se paie cher. Si les tests ralentissent le pipeline, la solution est de les réorganiser par niveaux : (1) tests unitaires rapides à chaque commit, (2) tests d'intégration sur la branche, (3) tests end-to-end complets uniquement avant la mise en production. On ne supprime pas la filet de sécurité — on l'optimise. Les équipes qui désactivent leurs tests récupèrent souvent des incidents critiques en production dans les semaines qui suivent."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment rendre une stratégie de tests vraiment utilisée et vivante dans une équipe agile?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Une stratégie de tests reste dans un tiroir quand elle est rédigée une fois et jamais revisitée. Pour la rendre vivante : (1) la co-construire avec l'équipe — Dev, QA, PO — pas seulement le QA Lead, (2) l'ancrer dans les rituels existants (refinement, sprint review) plutôt que dans un document séparé, (3) la limiter à une page maximum avec les décisions clés, (4) la mettre à jour à chaque rétrospective. Une stratégie de tests efficace répond à trois questions : que teste-t-on, comment, et qui est responsable de quoi."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment intégrer la qualité logicielle dans les rituels Scrum sans ajouter de réunions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La qualité ne nécessite pas de réunions supplémentaires quand elle est intégrée dans les rituels existants. En refinement : discuter les critères d'acceptation et les cas limites dès la rédaction des user stories. En sprint planning : identifier les tests à automatiser dans la définition of done. En sprint review : inclure les métriques qualité (couverture, défauts, dette). En rétrospective : traiter un problème qualité récurrent. Cette approche 'qualité by default' réduit les bugs en production sans alourdir le calendrier."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment prioriser les tests sur une application mobile native iOS et Android?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La priorisation des tests mobile natifs repose sur le risque réel : (1) tester en priorité les parcours critiques — connexion, paiement, fonctionnalité principale — sur les appareils et versions les plus utilisés par vos vrais utilisateurs, (2) automatiser les régressions sur les cas stables, tester manuellement les nouveautés, (3) utiliser une matrice appareils/OS basée sur vos analytics, pas sur ce que vous avez sous la main, (4) distinguer les tests iOS des tests Android car les comportements diffèrent. Sur mobile, moins de tests bien ciblés vaut mieux qu'une couverture exhaustive mal priorisée."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment le QA peut-il participer aux revues de code et pourquoi est-il souvent exclu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le QA est souvent exclu des revues de code par habitude culturelle, pas par logique. Son apport est pourtant distinct du Dev : il vérifie la testabilité du code, identifie les cas limites non couverts, valide que les logs sont suffisants pour déboguer, et s'assure que les critères d'acceptation sont bien implémentés. Pour s'intégrer : proposer un checklist QA spécifique à la revue, commencer par un seul projet pilote, et montrer la valeur ajoutée sur quelques PRs avant de généraliser. C'est souvent un problème structurel, pas de compétences."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment choisir entre Cypress, Playwright et Selenium pour l'automatisation des tests?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le choix de l'outil dépend moins de la technologie que de la posture de l'équipe. Cypress est idéal pour les équipes front-end JavaScript avec des besoins de feedback rapide. Playwright offre plus de flexibilité multi-navigateurs et multi-langages. Selenium reste pertinent pour les applications legacy ou les équipes Java. Mais le vrai problème est rarement l'outil : si vos tests sont fragiles avec Selenium, ils le seront souvent avec Cypress. Avant de changer d'outil, demandez-vous si le problème vient de l'architecture des tests, des locators, ou du manque de pratiques partagées dans l'équipe."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "La certification ISTQB est-elle indispensable pour faire du QA?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'ISTQB n'est pas indispensable pour faire du QA, mais il est utile dans certains contextes. Il fournit un vocabulaire commun, structure les connaissances fondamentales et est reconnu dans les grandes organisations (banques, assurances, gouvernement). En début de carrière, l'expérience terrain sur de vrais projets apporte plus de valeur qu'une certification. L'ISTQB devient pertinent pour évoluer vers des rôles de lead, de coach QA, ou pour travailler avec des clients qui l'exigent. Il vaut mieux le passer avec quelques années de pratique pour ancrer les concepts dans des situations vécues."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment répartir les tests unitaires, d'intégration et end-to-end dans un pipeline CI/CD?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La répartition optimale suit la pyramide des tests adaptée aux besoins de feedback : (1) tests unitaires — rapides (< 5 min), lancés à chaque commit, couvrent la logique métier isolée, (2) tests d'intégration — moyens (5-15 min), lancés sur les branches, couvrent les interactions entre composants, (3) tests end-to-end — lents (15-45 min), lancés avant la mise en production, couvrent les parcours utilisateurs critiques. La question clé n'est pas 'combien de tests' mais 'quel feedback ai-je besoin, à quel moment du pipeline'. Un test E2E qui échoue 30 minutes après un commit tue la vélocité de l'équipe."
+          }
         }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Coach QA & Dev — Série complète de capsules LinkedIn",
+      "description": "Série de capsules vidéo de Samiha Salhi-Kacher sur le coaching QA et le développement logiciel moderne, publiées sur LinkedIn.",
+      "author": { "@id": "https://ia-diagnostic.vercel.app/#samiha" },
+      "numberOfItems": 9,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "item": { "@type": "CreativeWork", "name": "Épisode 1 : Je suis analyste QA depuis 4 ans. Je sens que j'ai envie d'autre chose… mais quoi ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-carriaeyre-coachqa-ugcPost-7341619527023042562-VLYi/", "description": "Évolution de carrière QA après 4 ans — automatisation, lead, coaching, architecture." } },
+        { "@type": "ListItem", "position": 2, "item": { "@type": "CreativeWork", "name": "Épisode 2 : On a désactivé nos tests automatisés dans la CI/CD. Ils prenaient trop de temps.", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_qa-ciabrcd-devops-ugcPost-7341667460586106880-d9cL/", "description": "Les conséquences de désactiver les tests automatisés dans le pipeline et les alternatives pragmatiques." } },
+        { "@type": "ListItem", "position": 3, "item": { "@type": "CreativeWork", "name": "Épisode 3 : J'ai écrit une stratégie de tests… mais personne ne la lit.", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-qualitaezlogicielle-strataezgiedetests-ugcPost-7341902937247375361-PIGs/", "description": "Comment rendre une stratégie de tests vivante et réellement utilisée par l'équipe." } },
+        { "@type": "ListItem", "position": 4, "item": { "@type": "CreativeWork", "name": "Épisode 3.2 : Faire vivre la stratégie QA… sans réunion en plus", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-strataezgiedetests-scrum-ugcPost-7342010792273190913-Bp9O/", "description": "Intégrer la qualité dans les rituels Scrum existants — refinement, sprint planning, reviews." } },
+        { "@type": "ListItem", "position": 5, "item": { "@type": "CreativeWork", "name": "Épisode 4 : Comment prioriser les tests mobile natifs ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testingstrategy-mobiledevelopment-ugcPost-7341916522832928770-NKRt/", "description": "Stratégie de priorisation des tests iOS et Android quand les ressources sont limitées." } },
+        { "@type": "ListItem", "position": 6, "item": { "@type": "CreativeWork", "name": "Épisode 5 : On ne me laisse pas reviewer… et si c'était structurel ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-revuesdecode-partagederesponsabilitaez-ugcPost-7342026574814191616-Ds0b/", "description": "Revues de code et partage de responsabilité — pourquoi le QA est exclu et comment changer ça." } },
+        { "@type": "ListItem", "position": 7, "item": { "@type": "CreativeWork", "name": "Épisode 6 : Changer d'outil de test… ou changer de posture ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-testautomation-cypress-ugcPost-7342034110200131584--5Sx/", "description": "Cypress, Playwright, Selenium — le problème est rarement l'outil, mais la posture de l'équipe." } },
+        { "@type": "ListItem", "position": 8, "item": { "@type": "CreativeWork", "name": "Épisode 7 : Faut-il passer l'ISTQB pour faire du QA ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coachqa-istqb-formationqa-ugcPost-7351235352478588928-mJ5U/", "description": "Valeur réelle de la certification ISTQB — quand la passer, pour qui, et ce qu'elle apporte vraiment." } },
+        { "@type": "ListItem", "position": 9, "item": { "@type": "CreativeWork", "name": "Épisode 8 : Comment répartir les tests automatisés dans la CI/CD ?", "url": "https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coach-qa-dev-%C3%A9pisode-8-comment-ugcPost-7354168312177561604-zJbu/", "description": "Pyramide des tests appliquée au pipeline — unitaires, intégration, end-to-end : quand et où." } }
       ]
     }
   ]

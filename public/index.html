@@ -2412,6 +2412,12 @@ const RESOURCES = [
     url:   'https://youtu.be/efnnIUGrG4o?si=fAOcTqLrSKd9xY7m',
     youtubeId: 'efnnIUGrG4o',
   },
+  {
+    type: 'LinkedIn',
+    title: 'Coach QA Dev · Épisode 8',
+    desc:  'Comment intégrer l\'IA dans votre pratique QA au quotidien — outils, réflexes et retours terrain.',
+    url:   'https://www.linkedin.com/posts/samiha-salhi-kacher-173a921a_coach-qa-dev-%C3%A9pisode-8-comment-ugcPost-7354168312177561604-zJbu/',
+  },
   // ── Ajoutez vos prochaines ressources ici ──────────────────────────
   // {
   //   type: 'Article',
@@ -2432,6 +2438,17 @@ function renderResources() {
       ? `https://img.youtube.com/vi/${r.youtubeId}/maxresdefault.jpg`
       : (r.image || '');
 
+    const TYPE_ICONS = {
+      'LinkedIn': `<svg width="32" height="32" viewBox="0 0 24 24" fill="rgba(79,195,247,0.6)"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`,
+      'Article':  `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>`,
+      'Podcast':  `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>`,
+      'Outil':    `<svg width="32" height="32" fill="none" stroke="rgba(79,195,247,0.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
+    };
+    const noThumbHTML = !thumbUrl ? `
+      <div class="resource-thumb-wrap" style="display:flex;align-items:center;justify-content:center;background:var(--bg3)">
+        ${TYPE_ICONS[r.type] || ''}
+      </div>` : '';
+
     const thumbHTML = thumbUrl ? `
       <div class="resource-thumb-wrap">
         <img class="resource-thumb" src="${thumbUrl}" alt="${r.title}" loading="lazy">
@@ -2445,7 +2462,7 @@ function renderResources() {
 
     return `
       <a class="resource-card" href="${r.url}" target="_blank" rel="noopener">
-        ${thumbHTML}
+        ${thumbHTML || noThumbHTML}
         <div class="resource-body">
           <span class="resource-type">${r.type}</span>
           <div class="resource-title">${r.title}</div>

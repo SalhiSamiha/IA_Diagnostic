@@ -1595,14 +1595,10 @@ footer a { color: var(--text2); text-decoration: none; }
       <div id="actions-h3" class="actions-container"></div>
     </div>
 
-    <div style="display:flex;gap:12px;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--card-border);flex-wrap:wrap">
+    <div style="display:flex;gap:12px;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--card-border)">
       <button class="btn-primary" onclick="window.print()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm1-4h4"/></svg>
         Exporter PDF
-      </button>
-      <button id="btn-drive" class="btn-ghost" onclick="exportToDrive()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.56 13.22L1.5 18.5h7l3.06-5.28H4.56zm1.88-3.25L3.38 14.5H10l3.06-5.28-6.62.75zm12.5 3.25H12l-3 5.28h9l.94-5.28zM14.44 4.5L12 8.72l3.06 5.28 3-5.22-3.62-4.28z"/></svg>
-        Exporter vers Google Drive
       </button>
       <button class="btn-ghost" onclick="downloadJSON()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -1611,11 +1607,6 @@ footer a { color: var(--text2); text-decoration: none; }
       <button class="btn-ghost" onclick="resetDiag()" style="margin-left:auto">
         ↺ Nouveau diagnostic
       </button>
-    </div>
-    <div id="drive-result" style="display:none;margin-top:1rem;padding:.9rem 1.1rem;background:rgba(76,175,147,0.08);border:1px solid rgba(76,175,147,0.3);border-radius:var(--radius-sm);font-size:13px;display:none;align-items:center;gap:10px">
-      <svg width="16" height="16" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-      <span>Google Doc créé : </span>
-      <a id="drive-link" href="#" target="_blank" rel="noopener" style="color:var(--accent);font-weight:500;word-break:break-all">—</a>
     </div>
   </div>
 </section>
@@ -2122,50 +2113,6 @@ function downloadJSON() {
   a.download = 'diagnostic-ia-' + (state.rawData.org || 'organisation').toLowerCase().replace(/\s+/g,'-') + '.json';
   a.click();
   URL.revokeObjectURL(url);
-}
-
-/* ── EXPORT GOOGLE DRIVE (MCP tool_use) ── */
-async function exportToDrive() {
-  const btn = document.getElementById('btn-drive');
-  const resultBox = document.getElementById('drive-result');
-
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-color:rgba(79,195,247,0.3);border-top-color:var(--accent)"></div> Création du document...';
-  resultBox.style.display = 'none';
-
-  try {
-    const res = await fetch('/api/export-drive', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        data: {
-          org:         state.rawData.org,
-          sector:      state.rawData.sector,
-          teamSize:    state.rawData.teamSize,
-          methodology: state.rawData.methodology,
-          tools:       state.rawData.tools,
-          scores:      state.scores,
-          plan:        state.plan,
-        },
-      }),
-    });
-
-    const body = await res.json();
-    if (!res.ok) throw new Error(body.error || `Erreur ${res.status}`);
-
-    document.getElementById('drive-link').href = body.url;
-    document.getElementById('drive-link').textContent = body.url;
-    resultBox.style.display = 'flex';
-
-    btn.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> Document créé`;
-    btn.disabled = false;
-
-  } catch (err) {
-    console.error('Export Drive :', err);
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.56 13.22L1.5 18.5h7l3.06-5.28H4.56zm1.88-3.25L3.38 14.5H10l3.06-5.28-6.62.75zm12.5 3.25H12l-3 5.28h9l.94-5.28zM14.44 4.5L12 8.72l3.06 5.28 3-5.22-3.62-4.28z"/></svg> Exporter vers Google Drive`;
-    alert(`Erreur export : ${err.message}`);
-  }
 }
 
 /* ── RESET ── */

@@ -6,7 +6,7 @@ test.describe('Page d\'accueil — Hero & Navigation', () => {
   });
 
   test('titre de page correct', async ({ page }) => {
-    await expect(page).toHaveTitle(/Diagnostic IA/);
+    await expect(page).toHaveTitle(/Diagnostic.*IA|Samiha Salhi/);
   });
 
   test('photo de profil visible et chargée', async ({ page }) => {

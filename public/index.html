@@ -1448,6 +1448,18 @@ footer a { color: var(--text2); text-decoration: none; }
   .chat-fab { right: 1rem; bottom: 1rem; }
 }
 
+/* ── NAV RESPONSIVE mobile ── */
+@media (max-width: 560px) {
+  nav { overflow: hidden; }
+  .nav-links { gap: 1rem; }
+  .nav-links a { font-size: 12px; letter-spacing: 0; }
+  /* Masquer "Ressources" sur très petit écran — accessible via scroll */
+  .nav-links a[href="#ressources"] { display: none; }
+}
+
+/* Sécurité anti-débordement horizontal global */
+html, body { overflow-x: hidden; max-width: 100%; }
+
 /* ── PRINT ── */
 @media print {
   nav, .hero, #diagnostic, #services, footer { display: none !important; }

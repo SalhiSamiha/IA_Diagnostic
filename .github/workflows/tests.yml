@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   deployment_status:
+  workflow_dispatch:
 
 concurrency:
   group: tests-${{ github.ref }}

@@ -1448,17 +1448,21 @@ footer a { color: var(--text2); text-decoration: none; }
   .chat-fab { right: 1rem; bottom: 1rem; }
 }
 
-/* ── NAV RESPONSIVE mobile ── */
-@media (max-width: 560px) {
-  nav { overflow: hidden; }
-  .nav-links { gap: 1rem; }
-  .nav-links a { font-size: 12px; letter-spacing: 0; }
-  /* Masquer "Ressources" sur très petit écran — accessible via scroll */
-  .nav-links a[href="#ressources"] { display: none; }
-}
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 600px) {
+  /* Nav : masquer les liens sur mobile — navigation via scroll */
+  .nav-links { display: none; }
 
-/* Sécurité anti-débordement horizontal global */
-html, body { overflow-x: hidden; max-width: 100%; }
+  /* Wizard : masquer les labels de steps — seuls les dots restent */
+  .wp-name { display: none; }
+
+  /* Sections : réduire le padding latéral */
+  .section-inner { padding-left: 1rem; padding-right: 1rem; }
+  .gov-grid { grid-template-columns: 1fr; }
+  .scores-grid { grid-template-columns: 1fr; }
+  .radar-wrap { grid-template-columns: 1fr; }
+  .actions-container.active { grid-template-columns: 1fr; }
+}
 
 /* ── PRINT ── */
 @media print {

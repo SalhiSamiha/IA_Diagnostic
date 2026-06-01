@@ -11,12 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── Résout l'URL cible (production ou preview Vercel) ──────────────
+  # ── Résout l'URL cible — toujours la production ───────────────────
   resolve-url:
     name: Résoudre l'URL de déploiement
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'deployment_status' &&
        github.event.deployment_status.state == 'success')
     outputs:
@@ -25,17 +26,15 @@ jobs:
       - name: Déterminer BASE_URL
         id: set-url
         run: |
-          if [[ "${{ github.event_name }}" == "deployment_status" ]]; then
-            echo "base_url=${{ github.event.deployment_status.target_url }}" >> $GITHUB_OUTPUT
-          else
-            echo "base_url=https://ia-diagnostic.vercel.app" >> $GITHUB_OUTPUT
-          fi
+          # Toujours tester contre la production (env vars Anthropic/GitHub configurés)
+          echo "base_url=https://ia-diagnostic.vercel.app" >> $GITHUB_OUTPUT
 
   # ── Tests fonctionnels — Desktop 3 navigateurs ────────────────────
   test-functional:
     name: Fonctionnel — ${{ matrix.browser }}
     needs: resolve-url
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -72,6 +71,7 @@ jobs:
     name: Tests API
     needs: resolve-url
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -99,11 +99,12 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
-  # ── Tests UI — Mobile & Tablette ──────────────────────────────────
+  # ── Tests UI — Mobile & Tablette (Chromium uniquement en CI) ──────
   test-mobile:
     name: UI Mobile & Tablette
     needs: resolve-url
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -115,11 +116,12 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
-      - name: Installer les navigateurs mobile (Chromium + WebKit)
-        run: npx playwright install --with-deps chromium webkit
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Lancer les tests mobile et tablette
-        run: npx playwright test --project=mobile-chrome --project=mobile-safari --project=tablet
+        # mobile-safari (WebKit) retiré en CI — trop lent à installer sur Ubuntu
+        run: npx playwright test --project=mobile-chrome --project=tablet
         env:
           BASE_URL: ${{ needs.resolve-url.outputs.base_url }}
 

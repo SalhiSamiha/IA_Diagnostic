@@ -1,0 +1,168 @@
+name: QA Gate — Tests avant merge en production
+
+on:
+  push:
+    branches: [develop]
+  deployment_status:
+  workflow_dispatch:
+
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Vérifie qu'on est bien sur develop ───────────────────────────
+  resolve-qa-url:
+    name: Résoudre l'URL QA
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success' &&
+       github.event.deployment.ref == 'develop')
+    outputs:
+      qa_url: ${{ steps.set-url.outputs.qa_url }}
+    steps:
+      - name: Déterminer l'URL QA (preview Vercel)
+        id: set-url
+        run: |
+          if [[ "${{ github.event_name }}" == "deployment_status" ]]; then
+            echo "qa_url=${{ github.event.deployment_status.target_url }}" >> $GITHUB_OUTPUT
+          else
+            # Fallback : URL de preview stable pour la branche develop
+            echo "qa_url=https://ia-diagnostic-git-develop-salhisamiha.vercel.app" >> $GITHUB_OUTPUT
+          fi
+          echo "URL QA : $(cat $GITHUB_OUTPUT | grep qa_url | cut -d= -f2)"
+
+  # ── Tests fonctionnels QA — Desktop ──────────────────────────────
+  qa-functional:
+    name: QA Fonctionnel — ${{ matrix.browser }}
+    needs: resolve-qa-url
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer le navigateur
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Lancer les tests fonctionnels sur QA
+        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          BASE_URL: ${{ needs.resolve-qa-url.outputs.qa_url }}
+
+      - name: Publier le rapport QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-qa-fonctionnel-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+
+  # ── Tests API QA ──────────────────────────────────────────────────
+  qa-api:
+    name: QA Tests API
+    needs: resolve-qa-url
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Lancer les tests API sur QA
+        run: npx playwright test --project=api
+        env:
+          BASE_URL: ${{ needs.resolve-qa-url.outputs.qa_url }}
+
+      - name: Publier le rapport QA API
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-qa-api
+          path: playwright-report/
+          retention-days: 7
+
+  # ── Tests UI Mobile QA ────────────────────────────────────────────
+  qa-mobile:
+    name: QA UI Mobile & Tablette
+    needs: resolve-qa-url
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Lancer les tests mobile sur QA
+        run: npx playwright test --project=mobile-chrome --project=tablet
+        env:
+          BASE_URL: ${{ needs.resolve-qa-url.outputs.qa_url }}
+
+      - name: Publier le rapport QA Mobile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-qa-mobile
+          path: playwright-report/
+          retention-days: 7
+
+  # ── Gate QA — résumé et statut final ─────────────────────────────
+  qa-gate:
+    name: ✅ QA Gate — Prêt pour merge en production
+    needs: [qa-functional, qa-api, qa-mobile]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Évaluer le résultat du gate
+        run: |
+          echo "## Résultats QA Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Suite | Statut |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Fonctionnel (Chromium/Firefox/WebKit) | ${{ needs.qa-functional.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API | ${{ needs.qa-api.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Mobile & Tablette | ${{ needs.qa-mobile.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.qa-functional.result }}" == "success" && \
+                "${{ needs.qa-api.result }}" == "success" && \
+                "${{ needs.qa-mobile.result }}" == "success" ]]; then
+            echo "### ✅ QA Gate PASSÉ — merge vers main autorisé" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo "### ❌ QA Gate ÉCHOUÉ — merge vers main bloqué" >> $GITHUB_STEP_SUMMARY
+            echo "Corriger les tests avant de merger en production." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

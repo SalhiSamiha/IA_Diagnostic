@@ -1,4 +1,4 @@
-name: Tests E2E — Playwright
+name: Production — Tests E2E post-déploiement
 
 on:
   push:
@@ -7,26 +7,26 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: tests-${{ github.ref }}
+  group: prod-tests-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ── Résout l'URL cible — toujours la production ───────────────────
+  # ── Résout l'URL production ───────────────────────────────────────
   resolve-url:
-    name: Résoudre l'URL de déploiement
+    name: Résoudre l'URL de production
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'push' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'deployment_status' &&
-       github.event.deployment_status.state == 'success')
+       github.event.deployment_status.state == 'success' &&
+       github.event.deployment.ref == 'main')
     outputs:
       base_url: ${{ steps.set-url.outputs.base_url }}
     steps:
-      - name: Déterminer BASE_URL
+      - name: Déterminer BASE_URL (toujours production)
         id: set-url
         run: |
-          # Toujours tester contre la production (env vars Anthropic/GitHub configurés)
           echo "base_url=https://ia-diagnostic.vercel.app" >> $GITHUB_OUTPUT
 
   # ── Tests fonctionnels — Desktop 3 navigateurs ────────────────────

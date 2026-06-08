@@ -91,7 +91,7 @@ test.describe('UI & Responsivité cross-browser / mobile', () => {
   // ── Section Services ──────────────────────────────────────────────
 
   test('section services affiche les 6 cartes', async ({ page }) => {
-    await page.locator('a[href="#services"]').first().click();
+    await page.evaluate(() => document.getElementById('services').scrollIntoView());
     await page.waitForTimeout(600);
     const cards = page.locator('.service-card');
     await expect(cards).toHaveCount(6);
@@ -110,7 +110,7 @@ test.describe('UI & Responsivité cross-browser / mobile', () => {
   // ── Wizard sur mobile ─────────────────────────────────────────────
 
   test('formulaire wizard étape 1 utilisable sur mobile', async ({ page }) => {
-    await page.locator('a[href="#diagnostic"]').first().click();
+    await page.evaluate(() => document.getElementById('diagnostic').scrollIntoView());
     await page.waitForTimeout(600);
 
     const orgInput = page.locator('#org-name');

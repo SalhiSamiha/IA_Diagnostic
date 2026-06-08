@@ -1462,6 +1462,12 @@ footer a { color: var(--text2); text-decoration: none; }
   .scores-grid { grid-template-columns: 1fr; }
   .radar-wrap { grid-template-columns: 1fr; }
   .actions-container.active { grid-template-columns: 1fr; }
+
+  /* Hero stats : empêcher le débordement horizontal sur viewports étroits */
+  .hero-stats { flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+
+  /* Form grid : 1 colonne sur mobile */
+  .form-grid { grid-template-columns: 1fr; }
 }
 
 /* ── PRINT ── */
@@ -2359,28 +2365,72 @@ function renderPlan(plan) {
   state.plan = plan;
 }
 
-/* ── FALLBACK PLAN (sans clé API) ── */
+/* ── FALLBACK PLAN — contextuel par secteur et organisation ── */
 function fallbackPlan(data) {
-  const { scores } = data;
+  const { scores, sector, org } = data;
+  const orgName = org || 'votre organisation';
   const plan = { h1: [], h2: [], h3: [] };
 
+  // Actions spécifiques par secteur
+  const sectorMap = {
+    'Assurance': {
+      h1: { role: 'RSSI / Archi', action: `Cartographier les flux de données clients transitant par les LLM externes chez ${orgName}. Identifier les données couvertes par la Loi 25 et les exigences AMF. Implémenter un masquage automatique des NAS et informations médicales avant envoi aux APIs IA.`, impact: 'Conformité AMF · Risque réglementaire réduit' },
+      h2: { role: 'QA', action: `Déployer l'IA dans la validation des réclamations chez ${orgName} : génération automatique de cas de tests pour les scénarios de fraude et les règles métier. Mesurer le taux de détection d'anomalies sur 2 cycles de sprint.`, impact: 'Détection fraude +25% · Couverture tests +40%' }
+    },
+    'Banque / Finance': {
+      h1: { role: 'RSSI / Archi', action: `Établir une politique d'usage IA conforme OSFI/Loi 25 pour ${orgName}. Définir les données financières non transmissibles aux LLM externes (KYC, transactions, cotes de crédit) et implémenter des guardrails techniques.`, impact: 'Conformité OSFI · Audit-ready' },
+      h2: { role: 'Dev', action: `Intégrer GitHub Copilot dans le cycle de développement des microservices financiers de ${orgName}. Former les équipes sur les prompts sécurisés et instaurer une revue IA des snippets manipulant des données sensibles.`, impact: 'Vélocité +30% · Sécurité renforcée' }
+    },
+    'Technologie': {
+      h1: { role: 'Dev', action: `Déployer GitHub Copilot ou Cursor sur l'ensemble des équipes de ${orgName}. Mettre en place des conventions de prompts partagées et mesurer le gain de productivité après 2 sprints via les métriques de velocity.`, impact: 'Productivité dev +25% · ROI < 60 jours' },
+      h2: { role: 'DevOps', action: `Intégrer des agents IA dans le pipeline CI/CD de ${orgName} : génération automatique de tests de régression, analyse statique, détection précoce des vulnérabilités. Démarrer sur un projet pilote à faible risque.`, impact: 'Couverture tests +35% · Détection défauts ×3' }
+    },
+    'Santé': {
+      h1: { role: 'RSSI / Archi', action: `Réaliser une analyse d'impact vie privée (AIVP) pour tous les usages IA planifiés à ${orgName}. Identifier les renseignements de santé couverts par la Loi 25 et les normes MSSS. Définir l'architecture de données souveraine (hébergement Québec obligatoire).`, impact: 'Conformité Loi 25 · Protection patients' },
+      h2: { role: 'QA', action: `Déployer l'IA dans la documentation clinique et les processus administratifs non sensibles de ${orgName}. Mesurer la réduction du temps de saisie et valider la qualité des données avec les équipes cliniques.`, impact: 'Temps admin -30% · Qualité documentation +20%' }
+    },
+    'Gouvernement / OBNL': {
+      h1: { role: 'Management', action: `Rédiger et faire approuver une politique d'usage IA alignée sur les lignes directrices du SCT et de la CEST pour ${orgName}. Identifier les processus publics où l'IA peut être déployée de façon transparente et responsable.`, impact: 'Conformité SCT · Transparence citoyenne' },
+      h2: { role: 'PO', action: `Identifier 3 processus administratifs à forte volumétrie chez ${orgName} pouvant bénéficier de l'automatisation IA (traitement de formulaires, triage de requêtes, recherche documentaire). Lancer un pilote avec indicateurs de succès clairs.`, impact: 'Efficacité +20% · Service citoyen amélioré' }
+    },
+    'Manufacture': {
+      h1: { role: 'Dev', action: `Déployer des outils IA de maintenance prédictive et d'optimisation des processus de production chez ${orgName}. Commencer par instrumenter 2 lignes pilotes avec des capteurs et une interface IA de détection d'anomalies.`, impact: "Temps d'arrêt -20% · ROI mesurable < 90 jours" },
+      h2: { role: 'DevOps', action: `Intégrer l'IA dans le contrôle qualité automatisé de ${orgName} : vision par ordinateur pour la détection de défauts visuels. Mesurer la réduction du taux de défauts et du temps d'inspection manuelle.`, impact: 'Défauts -35% · Inspection automatisée' }
+    }
+  };
+
+  const sx = sectorMap[sector] || {};
+
+  // ── H1 : actions urgentes selon les scores ──
+  if (scores.gov < 40) {
+    plan.h1.push({ role: 'Management', action: `Rédiger et diffuser une politique d'usage de l'IA adaptée au contexte québécois pour ${orgName}. Identifier les données sensibles ne devant pas transiter par des LLM externes (données personnelles, informations confidentielles clients).`, impact: 'Urgent · Conformité Loi 25' });
+  }
   if (scores.roles < 50) {
-    plan.h1.push({ role: 'Dev', action: 'Autoriser et cadrer l\'usage de GitHub Copilot pour l\'équipe de développement. Rédiger une politique d\'usage minimale en 2 semaines et la diffuser à toute l\'équipe TI.', impact: 'Gain de productivité · Mise en place rapide' });
-    plan.h1.push({ role: 'QA', action: 'Expérimenter la génération automatique de cas de tests BDD avec un outil IA sur un projet pilote ciblé. Mesurer la réduction du temps de rédaction des scénarios.', impact: 'Couverture de tests +30%' });
+    plan.h1.push({ role: 'Dev', action: `Autoriser et cadrer l'usage de GitHub Copilot pour l'équipe de développement de ${orgName}. Rédiger une politique d'usage minimale en 2 semaines et la diffuser à toute l'équipe TI.`, impact: 'Gain de productivité · Mise en place rapide' });
+    plan.h1.push({ role: 'QA', action: `Expérimenter la génération automatique de cas de tests BDD avec un outil IA sur un projet pilote chez ${orgName}. Mesurer la réduction du temps de rédaction des scénarios.`, impact: 'Couverture de tests +30%' });
   }
   if (scores.sdlc < 50) {
-    plan.h1.push({ role: 'DevOps', action: 'Intégrer une étape d\'analyse IA (linting, sécurité statique) dans le pipeline CI/CD existant. Commencer par un outil open source pour valider l\'approche.', impact: 'Détection précoce des défauts' });
-    plan.h2.push({ role: 'QA', action: 'Mettre en place l\'assistance IA dans les revues de code. Former l\'équipe sur les prompts de revue efficaces et établir des conventions partagées dans Confluence.', impact: 'Réduction 40% du temps de revue' });
+    plan.h1.push({ role: 'DevOps', action: `Intégrer une étape d'analyse IA (linting, sécurité statique) dans le pipeline CI/CD de ${orgName}. Commencer par un outil open source pour valider l'approche sans risque.`, impact: 'Détection précoce des défauts' });
+  }
+  if (sx.h1 && plan.h1.length < 4) plan.h1.push(sx.h1);
+
+  // ── H2 : ancrage ──
+  if (scores.sdlc < 50) {
+    plan.h2.push({ role: 'QA', action: `Mettre en place l'assistance IA dans les revues de code chez ${orgName}. Former l'équipe sur les prompts de revue efficaces et établir des conventions partagées dans Confluence.`, impact: 'Réduction 40% du temps de revue' });
   }
   if (scores.gov < 40) {
-    plan.h1.push({ role: 'Management', action: 'Rédiger et diffuser une politique d\'usage de l\'IA adaptée au contexte québécois. Identifier les données sensibles ne devant pas transiter par des LLM externes (données personnelles, informations confidentielles clients).', impact: 'Urgent · Conformité Loi 25' });
-    plan.h2.push({ role: 'RSSI / Archi', action: 'Produire un inventaire complet des flux de données vers les APIs LLM. Évaluer la conformité Loi 25 et LPRPDE. Identifier les écarts et proposer un plan de remédiation.', impact: 'Réduction du risque réglementaire' });
-    plan.h3.push({ role: 'Direction TI', action: 'Planifier un audit IA annuel indépendant. Intégrer les objectifs de maturité IA dans les OKR organisationnels et le plan stratégique TI.', impact: 'Maturité gouvernance · AMF-ready' });
+    plan.h2.push({ role: 'RSSI / Archi', action: `Produire un inventaire complet des flux de données vers les APIs LLM chez ${orgName}. Évaluer la conformité Loi 25 et LPRPDE. Identifier les écarts et proposer un plan de remédiation.`, impact: 'Réduction du risque réglementaire' });
   }
-  plan.h2.push({ role: 'PO', action: 'Intégrer l\'IA dans la rédaction des user stories et la priorisation du backlog. Mesurer le gain de temps après 2 sprints et ajuster le processus en conséquence.', impact: 'Vélocité équipe +20%' });
-  plan.h2.push({ role: 'Dev', action: 'Former l\'équipe sur le pair programming avec l\'IA. Établir des conventions de prompts internes partagées et créer une bibliothèque de prompts réutilisables par rôle.', impact: 'Qualité de code · Transfert de connaissances' });
-  plan.h3.push({ role: 'Architecte', action: 'Définir une stack IA interne souveraine : modèles approuvés, infrastructure hébergée au Québec si possible, gouvernance des modèles et des données. Documenter les critères de sélection des outils IA.', impact: 'Souveraineté numérique · Scalabilité' });
-  plan.h3.push({ role: 'Tous les rôles', action: 'Lancer un programme de formation continue sur l\'IA augmentée adapté à chaque rôle. Créer des champions IA par équipe et mesurer le taux d\'adoption trimestriellement via un tableau de bord partagé.', impact: 'Transformation culturelle · ROI mesurable' });
+  if (sx.h2) plan.h2.push(sx.h2);
+  plan.h2.push({ role: 'PO', action: `Intégrer l'IA dans la rédaction des user stories et la priorisation du backlog de ${orgName}. Mesurer le gain de temps après 2 sprints et ajuster le processus.`, impact: 'Vélocité équipe +20%' });
+  plan.h2.push({ role: 'Dev', action: `Former l'équipe de ${orgName} sur le pair programming avec l'IA. Établir des conventions de prompts internes partagées et créer une bibliothèque de prompts réutilisables par rôle.`, impact: 'Qualité de code · Transfert de connaissances' });
+
+  // ── H3 : transformation ──
+  if (scores.gov < 40) {
+    plan.h3.push({ role: 'Direction TI', action: `Planifier un audit IA annuel indépendant pour ${orgName}. Intégrer les objectifs de maturité IA dans les OKR organisationnels et le plan stratégique TI.`, impact: 'Maturité gouvernance · AMF-ready' });
+  }
+  plan.h3.push({ role: 'Architecte', action: `Définir une stack IA interne souveraine pour ${orgName} : modèles approuvés, infrastructure hébergée au Québec si possible, gouvernance des modèles et des données.`, impact: 'Souveraineté numérique · Scalabilité' });
+  plan.h3.push({ role: 'Tous les rôles', action: `Lancer un programme de formation continue sur l'IA augmentée adapté à chaque rôle chez ${orgName}. Créer des champions IA par équipe et mesurer le taux d'adoption trimestriellement.`, impact: 'Transformation culturelle · ROI mesurable' });
 
   return plan;
 }
@@ -2498,7 +2548,8 @@ async function generatePlan() {
 
   document.getElementById('plan-loading').style.display = 'block';
 
-  const apiConfigured = API_KEY && API_KEY !== 'sk-ant-VOTRE-CLE-ICI' && API_KEY.startsWith('sk-ant-');
+  const forceDemo = new URLSearchParams(location.search).get('demo') === '1';
+  const apiConfigured = !forceDemo && API_KEY && API_KEY !== 'sk-ant-VOTRE-CLE-ICI' && API_KEY.startsWith('sk-ant-');
 
   if (apiConfigured) {
     try {
@@ -2509,12 +2560,10 @@ async function generatePlan() {
       console.error('Erreur API Anthropic :', err);
       document.getElementById('plan-loading').style.display = 'none';
       showAPIError(err.message);
-      const plan = fallbackPlan(data);
-      renderPlan(plan);
+      renderPlan(fallbackPlan(data));
     }
   } else {
-    // Mode démo — plan de fallback sans clé API
-    await new Promise(r => setTimeout(r, 1600));
+    // Mode démo — plan contextuel instantané
     document.getElementById('plan-loading').style.display = 'none';
     renderPlan(fallbackPlan(data));
   }

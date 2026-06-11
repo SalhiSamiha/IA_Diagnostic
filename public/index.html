@@ -1170,53 +1170,106 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   gap: 1.25rem;
 }
 
-/* ── PLAYLIST ── */
+/* ── PLAYLIST — widget scrollable ── */
 .playlist-wrap {
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  overflow: hidden;
   margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
 }
 .playlist-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .9rem 1.25rem;
+  padding: 1rem 1.25rem;
   background: var(--bg3);
   border-bottom: 1px solid var(--card-border);
+  gap: 1rem;
+}
+.playlist-header-left {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.playlist-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 .playlist-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .14em;
-  color: var(--accent);
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  display: block;
 }
-.playlist-meta { font-size: 12px; color: var(--text2); }
+.playlist-meta { font-size: 11px; color: var(--text2); display: block; margin-top: 1px; }
+.playlist-cta {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  opacity: .8;
+  transition: opacity .2s;
+}
+.playlist-cta:hover { opacity: 1; }
+
+/* Corps scrollable */
+.playlist-body {
+  max-height: 368px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-border) transparent;
+}
+.playlist-body::-webkit-scrollbar { width: 4px; }
+.playlist-body::-webkit-scrollbar-track { background: transparent; }
+.playlist-body::-webkit-scrollbar-thumb { background: var(--accent-border); border-radius: 4px; }
+
+/* Gradient bas pour indiquer le défilement */
+.playlist-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: linear-gradient(transparent, var(--card) 90%);
+  pointer-events: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
 .playlist-item {
   display: flex;
   align-items: flex-start;
-  gap: 1.1rem;
-  padding: .95rem 1.25rem;
+  gap: 1rem;
+  padding: .9rem 1.25rem;
   border-bottom: 1px solid rgba(255,255,255,0.04);
   text-decoration: none;
   transition: background .2s;
+  color: inherit;
 }
 .playlist-item:last-child { border-bottom: none; }
 .playlist-item:hover { background: var(--accent-dim); }
 .playlist-num {
   font-family: var(--serif);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--accent);
-  opacity: .3;
-  min-width: 30px;
-  line-height: 1.1;
+  opacity: .25;
+  min-width: 28px;
+  line-height: 1.15;
   transition: opacity .2s;
   flex-shrink: 0;
 }
 .playlist-item:hover .playlist-num { opacity: 1; }
-.playlist-info { flex: 1; }
+.playlist-info { flex: 1; min-width: 0; }
 .playlist-title {
   font-size: 13px;
   font-weight: 500;
@@ -1226,7 +1279,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 .playlist-desc { font-size: 12px; color: var(--text2); line-height: 1.5; font-weight: 300; }
 .playlist-arrow {
-  color: var(--text3);
+  color: var(--text2);
   flex-shrink: 0;
   margin-top: 3px;
   transition: color .2s, transform .2s;
@@ -2914,22 +2967,36 @@ const RESOURCES = [
 function renderPlaylist() {
   const wrap = document.getElementById('playlist-wrap');
   if (!wrap || !PLAYLIST.length) return;
+
+  const iconSvg = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <path d="M4 6h16M4 12h10M4 18h7"/>
+    <polygon points="17,11 22,14 17,17" fill="currentColor" stroke="none"/>
+  </svg>`;
+
+  const items = PLAYLIST.map(ep => `
+    <a class="playlist-item" href="${ep.url}" target="_blank" rel="noopener">
+      <span class="playlist-num">${String(ep.ep).padStart(2,'0')}</span>
+      <div class="playlist-info">
+        <div class="playlist-title">${ep.title}</div>
+        <div class="playlist-desc">${ep.desc}</div>
+      </div>
+      <svg class="playlist-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>`).join('');
+
   wrap.innerHTML = `
     <p class="section-label" style="margin-bottom:.75rem">Série complète</p>
     <div class="playlist-wrap">
       <div class="playlist-header">
-        <span class="playlist-label">⬡ Coach QA &amp; Dev</span>
-        <span class="playlist-meta">${PLAYLIST.length} épisodes · LinkedIn</span>
-      </div>
-      ${PLAYLIST.map(ep => `
-        <a class="playlist-item" href="${ep.url}" target="_blank" rel="noopener">
-          <span class="playlist-num">${String(ep.ep).padStart(2,'0')}</span>
-          <div class="playlist-info">
-            <div class="playlist-title">${ep.title}</div>
-            <div class="playlist-desc">${ep.desc}</div>
+        <div class="playlist-header-left">
+          <div class="playlist-icon-wrap">${iconSvg}</div>
+          <div>
+            <span class="playlist-label">Coach QA &amp; Dev</span>
+            <span class="playlist-meta">${PLAYLIST.length} épisodes · LinkedIn</span>
           </div>
-          <svg class="playlist-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>`).join('')}
+        </div>
+        <a class="playlist-cta" href="https://www.linkedin.com/in/samiha-salhi-kacher-173a921a" target="_blank" rel="noopener">Voir le profil →</a>
+      </div>
+      <div class="playlist-body">${items}</div>
     </div>`;
 }
 

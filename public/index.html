@@ -1012,33 +1012,110 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   border-width: 3px;
 }
 
-/* ── SERVICES ── */
+/* ── SERVICES — 3 cartes premium ── */
 #services { background: var(--bg2); border-top: 1px solid var(--card-border); }
-.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* Couleurs thématiques par carte */
+.sc-teal   { --sc: #38c9b0; --sc-bg: rgba(56,201,176,.1);  --sc-glow: rgba(56,201,176,.08);  --sc-shadow: rgba(56,201,176,.18); }
+.sc-purple { --sc: #8b7cf8; --sc-bg: rgba(139,124,248,.1); --sc-glow: rgba(139,124,248,.08); --sc-shadow: rgba(139,124,248,.18); }
+.sc-amber  { --sc: #f0a841; --sc-bg: rgba(240,168,65,.1);  --sc-glow: rgba(240,168,65,.08);  --sc-shadow: rgba(240,168,65,.18); }
+
 .service-card {
   background: var(--card);
   border: 1px solid var(--card-border);
+  border-top: 3px solid var(--sc);
   border-radius: var(--radius);
-  padding: 1.75rem;
-  transition: border-color .3s;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .3s, box-shadow .35s, transform .25s;
 }
-.service-card:hover { border-color: var(--accent-border); }
-.service-icon {
-  font-size: 28px;
-  margin-bottom: 1rem;
-  display: block;
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 55% at 50% 0%, var(--sc-glow), transparent 65%);
+  opacity: 0;
+  transition: opacity .35s;
+  pointer-events: none;
 }
+.service-card:hover { border-color: var(--sc); box-shadow: 0 12px 40px var(--sc-shadow); transform: translateY(-4px); }
+.service-card:hover::before { opacity: 1; }
+
+.sc-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--sc-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--sc);
+  border: 1px solid color-mix(in srgb, var(--sc) 25%, transparent);
+}
+
 .service-name {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: .5rem;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: .6rem;
+  color: var(--text);
+  letter-spacing: -.01em;
 }
-.service-desc { font-size: 13px; color: var(--text2); line-height: 1.65; font-weight: 300; }
-.service-price {
-  margin-top: 1.25rem;
-  font-family: var(--mono);
+.service-desc {
   font-size: 13px;
-  color: var(--accent);
+  color: var(--text2);
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+.sc-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+.sc-items li {
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  line-height: 1.5;
+}
+.sc-items li::before {
+  content: '›';
+  color: var(--sc);
+  font-size: 14px;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+.service-price {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--sc);
+  letter-spacing: .04em;
+  border-top: 1px solid var(--card-border);
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.service-price::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sc);
+  flex-shrink: 0;
 }
 
 /* ── HERO AVATAR ── */
@@ -1468,6 +1545,9 @@ footer a { color: var(--text2); text-decoration: none; }
 
   /* Form grid : 1 colonne sur mobile */
   .form-grid { grid-template-columns: 1fr; }
+
+  /* Services : 1 colonne sur mobile */
+  .services-grid { grid-template-columns: 1fr; gap: 1.25rem; }
 }
 
 /* ── FORMULAIRE DE CONTACT ── */
@@ -2129,42 +2209,66 @@ footer a { color: var(--text2); text-decoration: none; }
     <h2 class="section-title">Au-delà du diagnostic</h2>
     <p class="section-sub">Chaque rapport ouvre la porte à un mandat. Voici comment l'accompagnement se poursuit.</p>
     <div class="services-grid">
-      <div class="service-card">
-        <span class="service-icon">◎</span>
-        <div class="service-name">Diagnostic complet</div>
-        <p class="service-desc">Atelier facilité de 3h avec votre équipe TI. Rapport détaillé, plan d'actions personnalisé, restitution COPIL incluse.</p>
+
+      <!-- ── Carte 1 : Diagnostic & Conformité ── -->
+      <div class="service-card sc-teal">
+        <div class="sc-icon-wrap" aria-hidden="true">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="4"/>
+            <line x1="12" y1="2" x2="12" y2="8"/>
+            <line x1="12" y1="16" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="8" y2="12"/>
+            <line x1="16" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+        <div class="service-name">Diagnostic &amp; Conformité</div>
+        <p class="service-desc">Mesurez votre maturité IA et sécurisez votre conformité réglementaire — deux fondations indissociables avant toute transformation.</p>
+        <ul class="sc-items">
+          <li>Atelier diagnostic de 3h — rapport, plan d'actions, restitution COPIL</li>
+          <li>Politique d'usage IA, registre des risques, préparation AMF &amp; Loi 25</li>
+          <li>Livrables prêts à présenter en conseil d'administration</li>
+        </ul>
         <div class="service-price">300 $ / heure</div>
       </div>
-      <div class="service-card">
-        <span class="service-icon">⬡</span>
-        <div class="service-name">Accompagnement transformation</div>
-        <p class="service-desc">Mandat trimestriel pour implémenter le plan d'actions. Coaching des rôles, intégration IA dans le SDLC, jalons mesurés.</p>
+
+      <!-- ── Carte 2 : Transformation & Outillage ── -->
+      <div class="service-card sc-purple">
+        <div class="sc-icon-wrap" aria-hidden="true">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <div class="service-name">Transformation &amp; Outillage</div>
+        <p class="service-desc">Implémentez le plan d'actions et déployez les bons outils IA dans votre SDLC — avec des jalons mesurables et un ROI visible.</p>
+        <ul class="sc-items">
+          <li>Mandat trimestriel — coaching des rôles, intégration IA dans le SDLC</li>
+          <li>Déploiement structuré GitHub Copilot ou Azure OpenAI</li>
+          <li>Tableau de bord d'adoption et mesure du ROI</li>
+        </ul>
         <div class="service-price">300 $ / heure</div>
       </div>
-      <div class="service-card">
-        <span class="service-icon">✦</span>
-        <div class="service-name">Gouvernance IA & conformité</div>
-        <p class="service-desc">Politique d'usage IA, registre des risques, préparation AMF/Loi 25. Livrables prêts à présenter en conseil d'administration.</p>
+
+      <!-- ── Carte 3 : Formation & Rayonnement ── -->
+      <div class="service-card sc-amber">
+        <div class="sc-icon-wrap" aria-hidden="true">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0014 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8" y1="22" x2="16" y2="22"/>
+          </svg>
+        </div>
+        <div class="service-name">Formation &amp; Rayonnement</div>
+        <p class="service-desc">Montez en compétence vos équipes sur l'IA augmentée et portez votre expertise au-delà de votre organisation.</p>
+        <ul class="sc-items">
+          <li>Ateliers pratiques pour Dev, QA &amp; PO — demi-journée ou journée complète</li>
+          <li>Formats en présence ou en ligne, adaptés à votre contexte</li>
+          <li>Conférences sectorielles, événements internes et webinaires</li>
+        </ul>
         <div class="service-price">300 $ / heure</div>
       </div>
-      <div class="service-card">
-        <span class="service-icon">◈</span>
-        <div class="service-name">Formation équipes</div>
-        <p class="service-desc">Ateliers pratiques sur l'IA augmentée pour Dev, QA et PO. Formats demi-journée ou journée complète, en présence ou en ligne.</p>
-        <div class="service-price">300 $ / heure</div>
-      </div>
-      <div class="service-card">
-        <span class="service-icon">⌘</span>
-        <div class="service-name">Hub Gen AI · Copilot adoption</div>
-        <p class="service-desc">Déploiement structuré de GitHub Copilot ou Azure OpenAI au sein de vos équipes. Mesure de l'adoption, tableau de bord ROI.</p>
-        <div class="service-price">300 $ / heure</div>
-      </div>
-      <div class="service-card">
-        <span class="service-icon">◉</span>
-        <div class="service-name">Conférences & LinkedIn Live</div>
-        <p class="service-desc">Intervention dans vos événements internes, conférences sectorielles ou webinaires sur la transformation IA du SDLC.</p>
-        <div class="service-price">300 $ / heure</div>
-      </div>
+
     </div>
     <div style="text-align:center;margin-top:3rem">
       <a href="#contact" class="btn-primary">Discutons de votre contexte →</a>

@@ -90,11 +90,11 @@ test.describe('UI & Responsivité cross-browser / mobile', () => {
 
   // ── Section Services ──────────────────────────────────────────────
 
-  test('section services affiche les 6 cartes', async ({ page }) => {
+  test('section services affiche les 3 cartes', async ({ page }) => {
     await page.evaluate(() => document.getElementById('services').scrollIntoView());
     await page.waitForTimeout(600);
     const cards = page.locator('.service-card');
-    await expect(cards).toHaveCount(6);
+    await expect(cards).toHaveCount(3);
     await expect(cards.first()).toBeVisible();
   });
 

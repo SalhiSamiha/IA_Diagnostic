@@ -3117,18 +3117,18 @@ async function submitContact(e) {
   showContactFeedback('', null);
 
   try {
+    const fd = new FormData();
+    fd.append('access_key', WEB3FORMS_KEY);
+    fd.append('name',    name);
+    fd.append('email',   email);
+    fd.append('subject', sujet ? `[Contact IA] ${sujet}` : `[Contact IA] Message de ${name}`);
+    fd.append('message', message);
+    fd.append('replyto', email);
+
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        name,
-        email,
-        subject:    sujet ? `[Contact IA] ${sujet}` : `[Contact IA] Message de ${name}`,
-        message,
-        replyto:    email,
-        from_name:  'Diagnostic IA · Samiha Salhi-Kacher',
-      }),
+      headers: { Accept: 'application/json' },
+      body: fd,
     });
 
     const data = await res.json().catch(() => ({}));

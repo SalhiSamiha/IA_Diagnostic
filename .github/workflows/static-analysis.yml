@@ -1,0 +1,77 @@
+name: Static Analysis — Qualité du code
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: static-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── ESLint — API & Tests ──────────────────────────────────────────
+  lint-js:
+    name: ESLint — API & Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+  # ── HTMLHint — Page principale ────────────────────────────────────
+  lint-html:
+    name: HTMLHint — index.html
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: HTMLHint
+        run: npm run lint:html
+
+  # ── Gate final ────────────────────────────────────────────────────
+  static-analysis-gate:
+    name: ✅ Gate — Analyse statique
+    needs: [lint-js, lint-html]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Évaluer le gate
+        run: |
+          echo "## Résultats Analyse Statique" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Analyse | Statut |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| ESLint — API & Tests | ${{ needs.lint-js.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| HTMLHint — index.html | ${{ needs.lint-html.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.lint-js.result }}" == "success" && \
+                "${{ needs.lint-html.result }}" == "success" ]]; then
+            echo "### ✅ Analyse statique PASSÉE" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo "### ❌ Analyse statique ÉCHOUÉE — corriger avant de merger" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

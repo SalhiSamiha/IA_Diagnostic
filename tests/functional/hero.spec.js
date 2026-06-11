@@ -59,10 +59,11 @@ test.describe('Page d\'accueil — Hero & Navigation', () => {
     await expect(page.locator('#services')).toBeInViewport();
   });
 
-  test('nav : lien Contact ouvre le client mail', async ({ page }) => {
-    const mailto = page.locator('nav a[href^="mailto"]');
-    await expect(mailto).toBeVisible();
-    await expect(mailto).toHaveAttribute('href', 'mailto:salhisamiha83@gmail.com');
+  test('nav : lien Contact scrolle vers le formulaire de contact', async ({ page }) => {
+    const contactLink = page.locator('nav a[href="#contact"]');
+    await expect(contactLink).toBeVisible();
+    await contactLink.click();
+    await expect(page.locator('#contact-form')).toBeVisible();
   });
 
   test('footer contient LinkedIn, GPT et email', async ({ page }) => {

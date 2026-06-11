@@ -1470,6 +1470,84 @@ footer a { color: var(--text2); text-decoration: none; }
   .form-grid { grid-template-columns: 1fr; }
 }
 
+/* ── FORMULAIRE DE CONTACT ── */
+#contact { background: var(--bg2); }
+
+.contact-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-field label {
+  font-size: 12px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.contact-field input,
+.contact-field textarea {
+  background: var(--bg3);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 12px 14px;
+  transition: border-color .2s;
+  outline: none;
+  resize: vertical;
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+  border-color: var(--accent);
+}
+
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: var(--text2);
+  opacity: .5;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.contact-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: .5rem;
+}
+
+.contact-feedback {
+  font-size: 13px;
+  display: none;
+}
+.contact-feedback.ok    { color: var(--accent); display: block; }
+.contact-feedback.error { color: var(--danger);  display: block; }
+
+@media (max-width: 600px) {
+  .contact-row { grid-template-columns: 1fr; }
+}
+
 /* ── PRINT ── */
 @media print {
   nav, .hero, #diagnostic, #services, footer { display: none !important; }
@@ -1489,7 +1567,7 @@ footer a { color: var(--text2); text-decoration: none; }
     <a href="#diagnostic">Diagnostic</a>
     <a href="#services">Services</a>
     <a href="#ressources">Ressources</a>
-    <a href="mailto:salhisamiha83@gmail.com">Contact</a>
+    <a href="#contact">Contact</a>
   </div>
 </nav>
 
@@ -2089,7 +2167,7 @@ footer a { color: var(--text2); text-decoration: none; }
       </div>
     </div>
     <div style="text-align:center;margin-top:3rem">
-      <a href="mailto:salhisamiha83@gmail.com" class="btn-primary">Discutons de votre contexte →</a>
+      <a href="#contact" class="btn-primary">Discutons de votre contexte →</a>
     </div>
   </div>
 </section>
@@ -2103,6 +2181,47 @@ footer a { color: var(--text2); text-decoration: none; }
 
     <div id="playlist-wrap"></div>
     <div class="resources-grid" id="resources-grid"></div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-wrap">
+      <p class="section-label">Travaillons ensemble</p>
+      <h2 class="section-title">Discutons de votre contexte</h2>
+      <p class="section-sub">Une question sur le diagnostic, un projet de transformation IA, une conférence ? Écrivez-moi directement.</p>
+
+      <form class="contact-form" id="contact-form" onsubmit="submitContact(event)" novalidate>
+        <div class="contact-row">
+          <div class="contact-field">
+            <label for="cf-name">Nom *</label>
+            <input type="text" id="cf-name" name="name" placeholder="Votre nom" autocomplete="name" required>
+          </div>
+          <div class="contact-field">
+            <label for="cf-email">Email *</label>
+            <input type="email" id="cf-email" name="email" placeholder="vous@organisation.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="contact-field">
+          <label for="cf-sujet">Sujet</label>
+          <input type="text" id="cf-sujet" name="sujet" placeholder="Diagnostic IA, conférence, question…">
+        </div>
+
+        <div class="contact-field">
+          <label for="cf-message">Message *</label>
+          <textarea id="cf-message" name="message" rows="5" placeholder="Décrivez votre contexte, vos questions, votre organisation…" required></textarea>
+        </div>
+
+        <div class="contact-submit">
+          <button type="submit" class="btn-primary" id="cf-btn">
+            Envoyer le message →
+          </button>
+          <span class="contact-feedback" id="cf-feedback"></span>
+        </div>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -2971,6 +3090,59 @@ function activateChatDiag() {
   }
 
   updateCtxLabel();
+}
+
+/* ── FORMULAIRE DE CONTACT ── */
+async function submitContact(e) {
+  e.preventDefault();
+  const btn      = document.getElementById('cf-btn');
+  const feedback = document.getElementById('cf-feedback');
+  const form     = document.getElementById('contact-form');
+
+  const name    = document.getElementById('cf-name').value.trim();
+  const email   = document.getElementById('cf-email').value.trim();
+  const sujet   = document.getElementById('cf-sujet').value.trim();
+  const message = document.getElementById('cf-message').value.trim();
+
+  // Validation côté client
+  if (!name)    { showContactFeedback('Veuillez indiquer votre nom.', false); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showContactFeedback('Veuillez indiquer un email valide.', false); return;
+  }
+  if (message.length < 10) {
+    showContactFeedback('Veuillez saisir un message (minimum 10 caractères).', false); return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;margin-right:8px"></div> Envoi en cours…';
+  feedback.className = 'contact-feedback';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, sujet, message }),
+    });
+
+    if (res.ok) {
+      form.reset();
+      showContactFeedback('Message envoyé ✓ — Je vous répondrai sous 24-48 h.', true);
+    } else {
+      const data = await res.json().catch(() => ({}));
+      showContactFeedback(data.error || "Erreur d'envoi — réessayez ou écrivez directement à salhisamiha83@gmail.com", false);
+    }
+  } catch {
+    showContactFeedback("Erreur réseau — réessayez ou écrivez à salhisamiha83@gmail.com", false);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Envoyer le message →';
+  }
+}
+
+function showContactFeedback(msg, ok) {
+  const el = document.getElementById('cf-feedback');
+  el.textContent = msg;
+  el.className = 'contact-feedback ' + (ok ? 'ok' : 'error');
 }
 </script>
 </body>

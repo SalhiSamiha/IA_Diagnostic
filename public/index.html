@@ -2287,7 +2287,8 @@ footer a { color: var(--text2); text-decoration: none; }
 /* ═══════════════════════════════════════════════
    CONFIGURATION — mettre votre clé API ici
    ═══════════════════════════════════════════════ */
-const API_KEY = 'sk-ant-VOTRE-CLE-ICI';
+const API_KEY       = 'sk-ant-VOTRE-CLE-ICI';
+const WEB3FORMS_KEY = 'VOTRE-CLE-WEB3FORMS-ICI'; // web3forms.com → entrer salhisamiha83@gmail.com → copier la clé reçue par email
 
 /* ── SYSTEM PROMPT — Samiha, Conseillère Principale IA ── */
 const SYSTEM_PROMPT = `Tu es Samiha, conseillère principale en IA générative avec une expertise profonde en transformation organisationnelle, SDLC et gouvernance IA. Tu travailles avec des organisations québécoises — institutions financières, assureurs, entreprises technologiques et organismes publics — pour les aider à mesurer et accélérer leur maturité dans l'utilisation de l'IA.
@@ -3095,16 +3096,14 @@ function activateChatDiag() {
 /* ── FORMULAIRE DE CONTACT ── */
 async function submitContact(e) {
   e.preventDefault();
-  const btn      = document.getElementById('cf-btn');
-  const feedback = document.getElementById('cf-feedback');
-  const form     = document.getElementById('contact-form');
+  const btn   = document.getElementById('cf-btn');
+  const form  = document.getElementById('contact-form');
 
   const name    = document.getElementById('cf-name').value.trim();
   const email   = document.getElementById('cf-email').value.trim();
   const sujet   = document.getElementById('cf-sujet').value.trim();
   const message = document.getElementById('cf-message').value.trim();
 
-  // Validation côté client
   if (!name)    { showContactFeedback('Veuillez indiquer votre nom.', false); return; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     showContactFeedback('Veuillez indiquer un email valide.', false); return;
@@ -3115,24 +3114,33 @@ async function submitContact(e) {
 
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;margin-right:8px"></div> Envoi en cours…';
-  feedback.className = 'contact-feedback';
+  showContactFeedback('', null);
 
   try {
-    const res = await fetch('/api/contact', {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, sujet, message }),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        name,
+        email,
+        subject:    sujet ? `[Contact IA] ${sujet}` : `[Contact IA] Message de ${name}`,
+        message,
+        replyto:    email,
+        from_name:  'Diagnostic IA · Samiha Salhi-Kacher',
+      }),
     });
 
-    if (res.ok) {
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.success) {
       form.reset();
       showContactFeedback('Message envoyé ✓ — Je vous répondrai sous 24-48 h.', true);
     } else {
-      const data = await res.json().catch(() => ({}));
-      showContactFeedback(data.error || "Erreur d'envoi — réessayez ou écrivez directement à salhisamiha83@gmail.com", false);
+      showContactFeedback(data.message || "Erreur d'envoi — écrivez directement à salhisamiha83@gmail.com", false);
     }
   } catch {
-    showContactFeedback("Erreur réseau — réessayez ou écrivez à salhisamiha83@gmail.com", false);
+    showContactFeedback("Erreur réseau — écrivez à salhisamiha83@gmail.com", false);
   } finally {
     btn.disabled = false;
     btn.innerHTML = 'Envoyer le message →';
@@ -3142,7 +3150,7 @@ async function submitContact(e) {
 function showContactFeedback(msg, ok) {
   const el = document.getElementById('cf-feedback');
   el.textContent = msg;
-  el.className = 'contact-feedback ' + (ok ? 'ok' : 'error');
+  el.className = ok === null ? 'contact-feedback' : 'contact-feedback ' + (ok ? 'ok' : 'error');
 }
 </script>
 </body>

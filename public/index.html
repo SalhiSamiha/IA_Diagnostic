@@ -1601,7 +1601,155 @@ footer a { color: var(--text2); text-decoration: none; }
 
   /* Services : 1 colonne sur mobile */
   .services-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+
+  /* Événements : 1 colonne sur mobile */
+  .events-grid { grid-template-columns: 1fr; }
 }
+
+/* ── ÉVÉNEMENTS ── */
+#evenements {
+  background: var(--bg);
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.event-card {
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  position: relative;
+}
+
+.event-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(116,196,145,.1);
+}
+
+.event-card.past { opacity: .5; }
+.event-card.past .event-card-cta { display: none; }
+
+.event-meta {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  flex-wrap: wrap;
+}
+
+.event-date-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  padding: .25rem .65rem;
+}
+
+.event-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text2);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: .2rem .5rem;
+}
+
+.event-card h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.event-detail {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.event-detail svg { flex-shrink: 0; opacity: .65; }
+
+.event-desc {
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.event-card-cta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.event-gratuit {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: var(--accent);
+  opacity: .75;
+}
+
+a.luma-checkout--button {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: #0b1a0d;
+  font-size: 13px;
+  font-weight: 700;
+  padding: .6rem 1.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity .2s, transform .1s;
+  letter-spacing: .02em;
+}
+
+a.luma-checkout--button:hover { opacity: .85; transform: translateY(-1px); }
+
+.events-more {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.events-more a {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: .6;
+  transition: opacity .2s;
+}
+
+.events-more a:hover { opacity: 1; }
 
 /* ── FORMULAIRE DE CONTACT ── */
 #contact { background: var(--bg2); }
@@ -1700,6 +1848,7 @@ footer a { color: var(--text2); text-decoration: none; }
     <a href="#diagnostic">Diagnostic</a>
     <a href="#services">Services</a>
     <a href="#ressources">Ressources</a>
+    <a href="#evenements">Événements</a>
     <a href="#contact">Contact</a>
   </div>
 </nav>
@@ -2338,6 +2487,90 @@ footer a { color: var(--text2); text-decoration: none; }
 
     <div id="playlist-wrap"></div>
     <div class="resources-grid" id="resources-grid"></div>
+  </div>
+</section>
+
+<!-- ── ÉVÉNEMENTS ── -->
+<section id="evenements">
+  <div class="section-inner">
+    <p class="section-label">Agenda</p>
+    <h2 class="section-title">Événements & Ateliers</h2>
+    <p class="section-sub">Ateliers pratiques, webinaires et conférences sur l'IA générative et la transformation des équipes TI.</p>
+
+    <div class="events-grid">
+
+      <!-- Événement 1 — À PERSONNALISER avec votre slug Luma -->
+      <div class="event-card">
+        <div class="event-meta">
+          <span class="event-date-badge">À venir</span>
+          <span class="event-tag">Atelier</span>
+          <span class="event-tag">Gratuit</span>
+        </div>
+        <h3>Diagnostic IA en équipe : passez à l'action en 90 minutes</h3>
+        <div class="event-details">
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Date à confirmer — Montréal, QC</span>
+          </div>
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>90 minutes · En présentiel + diffusion en ligne</span>
+          </div>
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Places limitées — 20 participants max</span>
+          </div>
+        </div>
+        <p class="event-desc">Session interactive pour mesurer la maturité IA de votre équipe TI, identifier vos leviers prioritaires et repartir avec un plan d'actions concret sur 3 horizons.</p>
+        <div class="event-card-cta">
+          <!-- Remplacez VOTRE-SLUG-LUMA par le slug de votre événement sur lu.ma -->
+          <a href="https://lu.ma/VOTRE-SLUG-LUMA" class="luma-checkout--button" data-luma-action="checkout">
+            S'inscrire →
+          </a>
+          <span class="event-gratuit">Entrée libre</span>
+        </div>
+      </div>
+
+      <!-- Événement 2 — À PERSONNALISER -->
+      <div class="event-card">
+        <div class="event-meta">
+          <span class="event-date-badge">À venir</span>
+          <span class="event-tag">Webinaire</span>
+          <span class="event-tag">Gratuit</span>
+        </div>
+        <h3>Gouvernance IA : ce que la Loi 25 et l'AMF changent concrètement pour vos équipes</h3>
+        <div class="event-details">
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Date à confirmer · En ligne (Zoom)</span>
+          </div>
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>60 minutes · Q&amp;A inclus</span>
+          </div>
+          <div class="event-detail">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Ouvert à tous — lien envoyé après inscription</span>
+          </div>
+        </div>
+        <p class="event-desc">Tour d'horizon pragmatique des obligations réglementaires québécoises liées à l'IA. Ce qui change vraiment dans vos pratiques SDLC, vos contrats et vos audits.</p>
+        <div class="event-card-cta">
+          <!-- Remplacez VOTRE-SLUG-LUMA-2 par le slug de votre 2e événement -->
+          <a href="https://lu.ma/VOTRE-SLUG-LUMA-2" class="luma-checkout--button" data-luma-action="checkout">
+            S'inscrire →
+          </a>
+          <span class="event-gratuit">Entrée libre</span>
+        </div>
+      </div>
+
+    </div><!-- /.events-grid -->
+
+    <div class="events-more">
+      <!-- Remplacez par votre profil Luma : lu.ma/votre-nom -->
+      <a href="https://lu.ma/VOTRE-PROFIL-LUMA" target="_blank" rel="noopener">
+        Voir tous les événements sur Luma →
+      </a>
+    </div>
   </div>
 </section>
 
@@ -3324,5 +3557,8 @@ function showContactFeedback(msg, ok) {
   el.className = ok === null ? 'contact-feedback' : 'contact-feedback ' + (ok ? 'ok' : 'error');
 }
 </script>
+
+<!-- Luma checkout popup — chargé en différé pour ne pas bloquer le rendu -->
+<script id="luma-checkout" src="https://embed.lu.ma/checkout-button.js" defer></script>
 </body>
 </html>

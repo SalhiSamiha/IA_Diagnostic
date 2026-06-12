@@ -26,7 +26,7 @@
         "X-XSS-Protection": "1; mode=block",
         "Referrer-Policy": "strict-origin-when-cross-origin",
         "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://api.web3forms.com; img-src 'self' data: https://img.youtube.com; frame-src https://www.youtube.com; frame-ancestors 'none'"
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.lu.ma; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://api.web3forms.com https://lu.ma https://api.lu.ma; img-src 'self' data: https://img.youtube.com https://cdn.lu.ma; frame-src https://www.youtube.com https://lu.ma; frame-ancestors 'none'"
       }
     }
   ]
